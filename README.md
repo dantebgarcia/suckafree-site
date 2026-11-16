@@ -54,15 +54,3 @@ The home page has a "Welcome to the warehouse" spot (`#welcome-video` in `public
 ## Not connected yet
 
 The rental and contact forms still show a preview message instead of sending. Membership dues need payment links (see above).
-
-## Brand preview (/new/)
-
-`public/new/index.html` is the site in the Fall 2026 brand voice and look (see `/brand`): the
-City Kid, the Cloud Builder and the Keeper. It's built from the main page by a script, so it
-picks up any fixes you make there:
-
-    python3 scripts/build-new.py
-
-The "New brand look" switch in the star panel (bottom right) flips between `/` and `/new/`,
-keeping the page you're on. `/new/` is marked noindex. When the crew picks it, copy
-`public/new/index.html` over `public/index.html` (and drop the noindex line).
