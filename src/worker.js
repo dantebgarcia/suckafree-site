@@ -44,12 +44,15 @@ const MEMBERS_SCHEMA = `CREATE TABLE IF NOT EXISTS members (
   sheet_status TEXT
 )`;
 
+// 'supporter' is the founding drive; the rest is artist membership.
+// rider and pwyc are from the first version of the page and still count as supporters.
+const SUPPORTER_TIERS = ['supporter', 'rider', 'pwyc'];
 const TIERS = {
+  supporter: { name: 'Founding Community Supporter', amount: null, min: 5 },
   rider: { name: 'Rider', amount: 15 },
   daytripper: { name: 'Day Tripper', amount: 45 },
   nightowl: { name: 'Night Owl', amount: 95 },
   partner: { name: 'Partner Org', amount: 150 },
-  supporter: { name: 'Founding Supporter', amount: null, min: 100 },
   pwyc: { name: 'Rider (pay what you can)', amount: null, min: 5 },
 };
 const STATUSES = ['signed up', 'paying', 'cancelled'];
@@ -158,7 +161,8 @@ async function handleSignup(request, env, ctx) {
 function foundingGoal(env) { return Number(env.FOUNDING_GOAL_MONTHLY) > 0 ? Number(env.FOUNDING_GOAL_MONTHLY) : 3000; }
 
 async function foundingStats(env) {
-  const r = await env.DB.prepare("SELECT COUNT(*) AS n, COALESCE(SUM(amount), 0) AS total FROM members WHERE status != 'cancelled'").first();
+  const inList = SUPPORTER_TIERS.map((x) => `'${x}'`).join(',');
+  const r = await env.DB.prepare(`SELECT COUNT(*) AS n, COALESCE(SUM(amount), 0) AS total FROM members WHERE status != 'cancelled' AND tier IN (${inList})`).first();
   const extraN = Number(env.FOUNDING_OFFSET) > 0 ? Math.floor(Number(env.FOUNDING_OFFSET)) : 0;
   const extra$ = Number(env.FOUNDING_OFFSET_MONTHLY) > 0 ? Math.floor(Number(env.FOUNDING_OFFSET_MONTHLY)) : 0;
   return { ok: true, count: r.n + extraN, monthly: r.total + extra$, goal_monthly: foundingGoal(env) };
@@ -345,6 +349,8 @@ async function handleAdmin(request, env, ctx, url, path) {
   const paying = live.filter((m) => m.status === 'paying');
   const payingSum = paying.reduce((t, m) => t + (m.amount || 0), 0);
   const stats = await foundingStats(env);
+  const artists = live.filter((m) => !SUPPORTER_TIERS.includes(m.tier));
+  const artistSum = artists.reduce((t, m) => t + (m.amount || 0), 0);
   const memWaiting = mem.filter((m) => m.sheet_status !== 'sent').length;
   const msg = url.searchParams.get('msg') || '';
   const note = msg === 'updated' ? 'Updated.' : msg === 'deleted' ? 'Removed.'
@@ -377,9 +383,9 @@ async function handleAdmin(request, env, ctx, url, path) {
     </tr>`).join('');
 
   return page('Members and sign-ups', `
-    <h2 id="members">Founding members</h2>
+    <h2 id="members">Founding supporters and artist members</h2>
     <div class="bar">
-      <p class="big">$${stats.monthly.toLocaleString('en-US')} of $${stats.goal_monthly.toLocaleString('en-US')}/month signed up · ${stats.count} members · ${paying.length} paying ($${payingSum.toLocaleString('en-US')}/month)</p>
+      <p class="big">Founding supporters: $${stats.monthly.toLocaleString('en-US')} of $${stats.goal_monthly.toLocaleString('en-US')}/month from ${stats.count} people<br>Artist members: ${artists.length} ($${artistSum.toLocaleString('en-US')}/month) · Paying so far: ${paying.length} ($${payingSum.toLocaleString('en-US')}/month)</p>
       <div class="actions"><a class="btn" href="/admin/members.csv">Download members CSV</a></div>
     </div>
     <p class="hint">Set someone to <b>paying</b> once their monthly payment is set up. <b>Cancelled</b> takes them off the count on the site.</p>

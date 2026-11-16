@@ -39,10 +39,10 @@ Sign-ups made before the sheet was connected can be sent with **Send missing to 
 
 ## Founding members drive
 
-The home and Membership pages run a founding members drive toward $3,000 a month by April 15, 2027.
+The home and Membership pages run a Founding Community Supporters drive toward $3,000 a month by April 15, 2027 (any monthly amount from $5). Artist membership (Day Tripper, Night Owl, Partner Org) is a separate track on the same page and does not count toward the goal.
 
 - Sign-ups are saved in the `members` table, added to the email list, and copied to a **Founding Members** tab in the sheet.
-- The progress bar adds up the monthly amounts of everyone not marked cancelled, plus `FOUNDING_OFFSET_MONTHLY` (dollars) and `FOUNDING_OFFSET` (people) for anyone who joined offline. `FOUNDING_GOAL_MONTHLY` changes the goal (default 3000).
+- The progress bar adds up the monthly gifts of founding supporters not marked cancelled, plus `FOUNDING_OFFSET_MONTHLY` (dollars) and `FOUNDING_OFFSET` (people) for anyone who joined offline. `FOUNDING_GOAL_MONTHLY` changes the goal (default 3000).
 - On `/admin`, set each member's status to **paying** once their payment is set up, or **cancelled** to take them off the count.
 - Payment links: paste each level's link into `PAY_LINKS` near the bottom of `public/index.html`. With a link set, members get a "Set up my payment" button right after signing up; without one, the page says you will email them a link.
 
