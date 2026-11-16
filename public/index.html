@@ -66,9 +66,6 @@ ul{margin:0;padding:0;list-style:none}
 .top::after{content:"";display:block;height:12px;background:repeating-linear-gradient(90deg,var(--ink) 0 24px,var(--cream) 24px 48px);border-bottom:2px solid var(--ink)}
 .top-in{display:flex;align-items:center;gap:clamp(14px,2.4vw,32px);height:var(--barh);padding:0 var(--gutter);max-width:1440px;margin:0 auto}
 .top .tiles{--t:clamp(28px,2.5vw,38px);flex:none}
-/* the linocut Sutro mark sits just left of the tile wordmark */
-.brand{display:flex;align-items:center;gap:clamp(8px,1vw,14px);flex:none;text-decoration:none}
-.brand .mark{height:calc(var(--barh) - 14px);width:auto;flex:none}
 .nav{margin-left:auto}
 .nav ul{display:flex;gap:clamp(4px,1vw,16px);align-items:center}
 .nav a{display:block;font-family:var(--narrow);font-stretch:70%;font-weight:700;text-transform:uppercase;font-size:clamp(1.05rem,1.25vw,1.3rem);line-height:1;letter-spacing:.01em;text-decoration:none;padding:8px 6px 7px;white-space:nowrap}
@@ -85,12 +82,9 @@ ul{margin:0;padding:0;list-style:none}
 @media (max-width:640px){
   :root{--barh:68px}
   .top .cta{display:none}
-  .top .tiles{--t:22px}
-  .brand{gap:8px}
-  .brand .mark{height:48px}
+  .top .tiles{--t:28px}
 }
-@media (max-width:370px){.top .tiles{--t:20px}.brand .mark{height:42px}}
-@media (max-width:340px){.top .tiles{--t:17px}.brand .mark{height:38px}}
+@media (max-width:340px){.top .tiles{--t:22px}}
 
 /* hero pause button */
 .hero-toggle{position:absolute;right:clamp(18px,3vw,40px);top:clamp(18px,3vw,40px);width:52px;height:52px;border-radius:50%;border:0;background:var(--rail);color:var(--cream);display:grid;place-items:center;cursor:pointer;z-index:2}
@@ -445,7 +439,7 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
 
 <header class="top">
   <div class="top-in">
-    <a class="brand" href="#home" aria-label="Sucka Free Collective, home"><img class="mark" src="img/sutro-mark.svg" alt="" width="64" height="64"><span class="tiles" aria-hidden="true"><span>S</span><span>U</span><span>C</span><span>K</span><span>A</span><span class="star"></span><span>F</span><span>R</span><span>E</span><span>E</span></span></a>
+    <a class="tiles" href="#home" aria-label="Sucka Free Collective, home"><span>S</span><span>U</span><span>C</span><span>K</span><span>A</span><span class="star"></span><span>F</span><span>R</span><span>E</span><span>E</span></a>
     <nav class="nav" aria-label="Main">
       <ul>
         <li><a href="#mission">Mission</a></li>
