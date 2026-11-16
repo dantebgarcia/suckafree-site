@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sucka Free Top Bar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: a shop-window site. Flat fields of color, photos cropped into ovals and
+   blobs, white sticker labels in condensed caps, a black-and-cream bar band under a
+   tile wordmark built from the Sucka Free banner, in a classic top bar with page links and
+   a Rent the Space button.
+   The home hero cuts between real photos like stop-motion. One theme, on purpose. */
+:root{
+  --cream:#fbf8ef;
+  --ink:#0b0b0b;
+  --rail:#2f9e5b;      /* the green of the banner's hills */
+  --mustard:#e6b95c;
+  --lav:#c9b8f8;
+  --sky:#9ccbf4;
+  --pink:#f6a6d4;
+  --tomato:#ee5a35;
+  --magenta:#ff2fb9;
+  --body:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --narrow:"Archivo","Arial Narrow","Helvetica Neue Condensed",Arial,sans-serif;
+  --barh:84px;
+  --band:64px;
+  --bar:44px;
+  --wrap:1180px;
+  --gutter:clamp(18px,4vw,56px);
+  color-scheme:light;
+}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none !important}
+html{-webkit-text-size-adjust:100%;overflow-x:clip}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:var(--body);font-stretch:100%;font-size:1.0625rem;line-height:1.55;overflow-x:clip}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration-thickness:2px;text-underline-offset:4px}
+:focus-visible{outline:3px solid var(--magenta);outline-offset:3px}
+h1,h2,h3{margin:0;font-family:var(--narrow);font-stretch:68%;font-weight:800;text-transform:uppercase;line-height:.9;letter-spacing:-.005em;text-wrap:balance}
+p{margin:0}
+ul{margin:0;padding:0;list-style:none}
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 var(--gutter)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.prose{max-width:62ch;display:grid;gap:1em}
+.cap{font-family:var(--narrow);font-stretch:72%;font-weight:700;text-transform:uppercase;letter-spacing:.02em}
+
+/* ---------- wordmark: tiles from the banner ---------- */
+.tiles{display:flex;text-decoration:none;line-height:1}
+.tiles span{width:var(--t,44px);height:var(--t,44px);display:grid;place-items:center;font-family:var(--narrow);font-stretch:62%;font-weight:900;font-size:calc(var(--t,44px) * .86);background:var(--ink);color:var(--cream)}
+.tiles span:nth-child(even){background:var(--cream);color:var(--ink)}
+.tiles .star::before{content:"";width:62%;height:62%;background:currentColor;clip-path:polygon(50% 0,61% 39%,100% 50%,61% 61%,50% 100%,39% 61%,0 50%,39% 39%)}
+
+/* ---------- top bar ---------- */
+.band{height:var(--band);background:repeating-linear-gradient(90deg,var(--cream) 0 var(--bar),var(--ink) var(--bar) calc(var(--bar) * 2))}
+.bars{height:clamp(54px,7vw,92px);--bar:clamp(54px,7vw,92px);background:repeating-linear-gradient(90deg,var(--cream) 0 var(--bar),var(--ink) var(--bar) calc(var(--bar) * 2))}
+.top{position:sticky;top:0;z-index:30;background:var(--cream)}
+.top::after{content:"";display:block;height:12px;background:repeating-linear-gradient(90deg,var(--ink) 0 24px,var(--cream) 24px 48px);border-bottom:2px solid var(--ink)}
+.top-in{display:flex;align-items:center;gap:clamp(14px,2.4vw,32px);height:var(--barh);padding:0 var(--gutter);max-width:1440px;margin:0 auto}
+.top .tiles{--t:clamp(28px,2.5vw,38px);flex:none}
+.nav{margin-left:auto}
+.nav ul{display:flex;gap:clamp(4px,1vw,16px);align-items:center}
+.nav a{display:block;font-family:var(--narrow);font-stretch:70%;font-weight:700;text-transform:uppercase;font-size:clamp(1.05rem,1.25vw,1.3rem);line-height:1;letter-spacing:.01em;text-decoration:none;padding:8px 6px 7px;white-space:nowrap}
+.nav a:hover{background:var(--ink);color:var(--cream)}
+.nav a[aria-current="page"]{background:var(--mustard)}
+.cta{flex:none;font-size:1.2rem;padding:12px 18px 11px}
+.cta[aria-current="page"]{background:var(--mustard);color:var(--ink)}
+.burger{display:none;flex:none;width:48px;height:48px;border:2px solid var(--ink);background:var(--cream);cursor:pointer;place-items:center;padding:0}
+.burger svg{width:26px;height:26px;fill:var(--ink)}
+@media (max-width:1200px){
+  .nav{display:none}
+  .burger{display:grid;margin-left:auto}
+}
+@media (max-width:640px){
+  :root{--barh:68px}
+  .top .cta{display:none}
+  .top .tiles{--t:28px}
+}
+@media (max-width:340px){.top .tiles{--t:22px}}
+
+/* hero pause button */
+.hero-toggle{position:absolute;right:clamp(18px,3vw,40px);top:clamp(18px,3vw,40px);width:52px;height:52px;border-radius:50%;border:0;background:var(--rail);color:var(--cream);display:grid;place-items:center;cursor:pointer;z-index:2}
+.hero-toggle svg{width:24px;height:24px;fill:currentColor}
+.hero-toggle:hover{background:var(--ink)}
+
+/* ---------- menu overlay ---------- */
+.menu{position:fixed;inset:0;z-index:40;background:var(--lav);overflow:auto;display:grid;grid-template-rows:auto 1fr}
+.menu-list{padding:clamp(24px,5vw,60px) var(--gutter);display:grid;gap:clamp(4px,1vw,10px);align-content:start}
+.menu-list a{font-family:var(--narrow);font-stretch:66%;font-weight:800;text-transform:uppercase;font-size:clamp(3rem,10vw,7.5rem);line-height:.88;text-decoration:none;justify-self:start}
+.menu-list a:hover,.menu-list a[aria-current="page"]{background:var(--cream);padding:0 .08em}
+.menu-list .menu-cta{font-size:1.4rem;padding:14px 22px 13px;margin-bottom:14px;background:var(--ink);color:var(--cream)}
+.menu-list .menu-cta:hover{background:var(--cream);color:var(--ink);padding:14px 22px 13px}
+@media (min-width:641px){.menu-list .menu-cta{display:none}}
+.menu-foot{display:flex;flex-wrap:wrap;gap:10px 28px;padding:0 var(--gutter) 40px}
+
+/* ---------- labels + buttons ---------- */
+.label{display:inline-block;background:var(--cream);color:var(--ink);font-family:var(--narrow);font-stretch:68%;font-weight:800;text-transform:uppercase;line-height:.92;padding:.08em .22em .1em;font-size:var(--ls,clamp(1.6rem,3.6vw,3rem));text-decoration:none}
+.label--ink{background:var(--ink);color:var(--cream)}
+a.label:hover{background:var(--ink);color:var(--cream)}
+.btn{display:inline-flex;align-items:center;justify-content:center;font-family:var(--narrow);font-stretch:70%;font-weight:700;text-transform:uppercase;font-size:clamp(1.25rem,2.2vw,1.6rem);line-height:1;letter-spacing:.01em;padding:14px 22px 13px;border:2px solid var(--ink);background:transparent;color:var(--ink);text-decoration:none;cursor:pointer;transition:background .12s,color .12s}
+.btn:hover{background:var(--ink);color:var(--cream)}
+.btn--solid{background:var(--ink);color:var(--cream)}
+.btn--solid:hover{background:var(--cream);color:var(--ink)}
+.btn--sm{font-size:1.1rem;padding:10px 16px 9px}
+.btn-row{display:flex;flex-wrap:wrap;gap:12px}
+
+/* ---------- fields ---------- */
+.field{background:var(--f,var(--cream));padding:clamp(48px,7vw,104px) 0}
+.f-mustard{--f:var(--mustard)}.f-lav{--f:var(--lav)}.f-sky{--f:var(--sky)}.f-pink{--f:var(--pink)}.f-tomato{--f:var(--tomato)}.f-green{--f:var(--rail)}.f-cream{--f:var(--cream)}
+.stack{display:grid;gap:clamp(28px,4vw,48px)}
+.head{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:12px 24px}
+.head h2{font-size:clamp(3rem,8vw,6.5rem)}
+.split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,5vw,72px);align-items:center}
+@media (max-width:820px){.split{grid-template-columns:1fr}}
+.lede{font-size:clamp(1.15rem,2vw,1.35rem);line-height:1.5}
+
+/* photo crops */
+.crop{overflow:hidden;background:var(--ink)}
+.crop img{width:100%;height:100%;object-fit:cover;transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+a.crop:hover img,a:hover>.crop img{transform:scale(1.04)}
+.oval{border-radius:50%}
+.blob{border-radius:44% 56% 38% 62% / 30% 34% 66% 70%}
+.arch{border-radius:50% 50% 10px 10px / 34% 34% 10px 10px}
+.pebble{border-radius:62% 38% 55% 45% / 48% 60% 40% 52%}
+
+/* ---------- home hero: stop-motion ---------- */
+.hero{position:relative;height:clamp(440px,calc(100vh - var(--band)),820px);overflow:hidden;background:var(--ink)}
+.hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;visibility:hidden}
+.hero img.on{visibility:visible}
+.hero-labels{position:absolute;inset:0;display:grid;grid-template-columns:1fr auto;grid-template-rows:auto 1fr auto;padding:clamp(18px,3vw,40px);pointer-events:none}
+.hero-labels>*{pointer-events:auto}
+.hero-tag{grid-column:1;grid-row:1;justify-self:start;--ls:clamp(1.3rem,2.6vw,2.2rem)}
+.hero-name{grid-column:1/3;grid-row:3;display:grid;gap:6px;justify-items:start}
+.hero-name .label{--ls:clamp(2.2rem,6vw,5rem)}
+.hero-name .label + .label{--ls:clamp(1.3rem,2.8vw,2.3rem)}
+
+/* home: on board */
+.board{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:clamp(16px,2.4vw,32px);align-items:start}
+.board-a{grid-column:1/6;display:grid;gap:18px;text-decoration:none}
+.board-a .crop{aspect-ratio:4/5}
+.board-b{grid-column:8/13;display:grid;gap:18px;text-decoration:none;margin-top:clamp(40px,10vw,140px)}
+.board-b .crop{aspect-ratio:5/6}
+.board .label{justify-self:start}
+.board-c{grid-column:2/12;display:grid;gap:18px;text-decoration:none;margin-top:clamp(20px,4vw,60px)}
+.board-c .crop{aspect-ratio:16/9}
+.board-c .label{justify-self:end;margin-top:-1.4em;margin-right:clamp(10px,3vw,40px);position:relative}
+@media (max-width:700px){.board-a,.board-b,.board-c{grid-column:1/-1;margin-top:0}}
+
+/* home: statement */
+.statement{font-family:var(--narrow);font-stretch:66%;font-weight:800;text-transform:uppercase;font-size:clamp(2.6rem,7vw,6.25rem);line-height:.9;max-width:16ch;text-wrap:balance}
+
+/* timetable */
+.timetable{border-top:3px solid var(--ink)}
+.timetable li{display:grid;grid-template-columns:minmax(150px,240px) 1fr auto;gap:8px 28px;align-items:center;padding:20px 0;border-bottom:3px solid var(--ink)}
+.tt-date{font-family:var(--narrow);font-stretch:70%;font-weight:700;text-transform:uppercase;font-size:clamp(1.2rem,2vw,1.5rem);line-height:1;font-variant-numeric:tabular-nums}
+.tt-what strong{display:block;font-family:var(--narrow);font-stretch:66%;font-weight:800;text-transform:uppercase;font-size:clamp(2rem,4.4vw,3.4rem);line-height:.9;margin-bottom:6px}
+.chip{font-family:var(--narrow);font-stretch:72%;font-weight:700;text-transform:uppercase;font-size:1.05rem;padding:6px 12px 5px;background:var(--c,var(--mustard));color:var(--ink);white-space:nowrap}
+@media (max-width:680px){.timetable li{grid-template-columns:1fr}.chip{justify-self:start}}
+
+/* passes as product tiles */
+.tiers{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(14px,2vw,24px)}
+@media (max-width:1000px){.tiers{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:520px){.tiers{gap:12px}.swatch .label{--ls:1.25rem;left:8px;bottom:8px}.tier-meta{font-size:1rem;flex-direction:column;gap:2px}}
+.tier{display:grid;gap:12px;text-decoration:none;align-content:start}
+.swatch{aspect-ratio:4/5;position:relative;overflow:hidden;transition:transform .3s}
+.tier:hover .swatch{transform:translateY(-6px)}
+.swatch .label{position:absolute;left:12px;bottom:12px;--ls:clamp(1.6rem,2.6vw,2.2rem)}
+.pat-stripe{background:repeating-linear-gradient(90deg,var(--sky) 0 26px,var(--cream) 26px 52px)}
+.pat-dots{background:radial-gradient(circle,var(--ink) 0 9px,transparent 10px) 0 0/40px 40px,radial-gradient(circle,var(--ink) 0 9px,transparent 10px) 20px 20px/40px 40px,var(--pink)}
+.pat-check{background:conic-gradient(var(--ink) 25%,var(--lav) 0 50%,var(--ink) 0 75%,var(--lav) 0) 0 0/52px 52px}
+.pat-wave{background-color:var(--mustard);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='30'%3E%3Cpath d='M0 15 Q15 0 30 15 T60 15' fill='none' stroke='%232f9e5b' stroke-width='9'/%3E%3C/svg%3E");background-size:60px 30px}
+.tier-meta{display:flex;justify-content:space-between;gap:12px;align-items:baseline;font-family:var(--narrow);font-stretch:72%;font-weight:700;text-transform:uppercase;font-size:1.25rem}
+.tier-meta span:last-child{font-variant-numeric:tabular-nums;white-space:nowrap}
+.tier p{font-size:.9688rem;line-height:1.45}
+
+/* ---------- page heads ---------- */
+.page-head{background:var(--f);padding:clamp(36px,6vw,80px) 0;overflow:hidden}
+.page-head .wrap{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,.7fr);gap:clamp(20px,4vw,48px);align-items:center}
+.page-head .wrap>div:first-child{container-type:inline-size;min-width:0}
+.page-head h1{font-size:clamp(3rem,13vw,11rem);font-size:min(11rem,19cqw);line-height:.82;font-stretch:62%}
+.page-head .sub{margin-top:18px}
+.page-head .sub .label{--ls:clamp(1.3rem,2.6vw,2rem)}
+.page-head .crop{aspect-ratio:1;max-width:380px;width:100%;justify-self:end}
+@media (max-width:760px){.page-head .wrap{grid-template-columns:1fr}.page-head .crop{max-width:240px;justify-self:start}}
+
+/* blocks */
+.blocks{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:clamp(14px,2vw,22px)}
+.block{background:var(--b,var(--cream));padding:22px 22px 24px;display:grid;gap:10px;align-content:start}
+.block h3{font-size:clamp(1.9rem,2.8vw,2.4rem)}
+.block p{font-size:.9688rem;line-height:1.5}
+.block .btn{justify-self:start;margin-top:6px}
+.b-mustard{--b:var(--mustard)}.b-lav{--b:var(--lav)}.b-sky{--b:var(--sky)}.b-pink{--b:var(--pink)}.b-tomato{--b:var(--tomato)}.b-green{--b:var(--rail);color:var(--cream)}.b-cream{--b:var(--cream)}.b-ink{--b:var(--ink);color:var(--cream)}
+.b-green .btn,.b-ink .btn{border-color:var(--cream);color:var(--cream)}
+.b-green .btn:hover,.b-ink .btn:hover{background:var(--cream);color:var(--ink)}
+.facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(12px,2vw,20px)}
+.facts div{display:grid;gap:4px;border-top:3px solid var(--ink);padding-top:12px}
+.facts b{font-family:var(--narrow);font-stretch:62%;font-weight:800;font-size:clamp(3rem,6vw,5rem);line-height:.85;font-variant-numeric:tabular-nums}
+.facts span{font-size:.9688rem;line-height:1.35}
+@media (max-width:760px){.facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.list{display:grid;gap:8px}
+.list li{font-family:var(--narrow);font-stretch:72%;font-weight:700;text-transform:uppercase;font-size:clamp(1.35rem,2.2vw,1.7rem);line-height:1.05;padding-bottom:8px;border-bottom:2px solid currentColor}
+.tags{display:flex;flex-wrap:wrap;gap:10px}
+.tags li{font-family:var(--narrow);font-stretch:72%;font-weight:700;text-transform:uppercase;font-size:1.2rem;border:2px solid var(--ink);padding:7px 14px 6px}
+.gallery{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(12px,2vw,22px);align-items:end}
+.gallery figure{margin:0;display:grid;gap:10px}
+.gallery figcaption{font-family:var(--narrow);font-stretch:72%;font-weight:700;text-transform:uppercase;font-size:1.2rem;line-height:1.05}
+.gallery .crop{aspect-ratio:3/4}
+.gallery figure:nth-child(2) .crop{aspect-ratio:1}
+@media (max-width:820px){.gallery{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.quote{font-family:var(--narrow);font-stretch:62%;font-weight:800;text-transform:uppercase;font-size:clamp(3rem,8vw,6.5rem);line-height:.86}
+.crew{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(14px,2vw,22px)}
+@media (max-width:820px){.crew{grid-template-columns:1fr}}
+
+/* membership passes detail */
+.passes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(14px,2vw,22px);align-items:stretch}
+@media (max-width:1000px){.passes{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.passes{grid-template-columns:1fr}}
+.pass{display:grid;grid-template-rows:auto 1fr;background:var(--cream)}
+.pass .swatch{aspect-ratio:auto;height:150px}
+.pass .swatch .label{--ls:clamp(1.5rem,2.2vw,2rem)}
+.pass-body{padding:18px 18px 20px;display:grid;gap:12px;grid-template-rows:auto auto 1fr auto;align-content:start}
+.pass-price{font-family:var(--narrow);font-stretch:66%;font-weight:800;font-size:2.6rem;line-height:.9;font-variant-numeric:tabular-nums}
+.pass-price small{font-family:var(--body);font-stretch:100%;font-size:.8125rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.pass-tag{font-weight:700}
+.ticks{display:grid;gap:7px;font-size:.9375rem;line-height:1.4}
+.ticks li{padding-left:18px;position:relative}
+.ticks li::before{content:"";position:absolute;left:0;top:.45em;width:9px;height:9px;background:var(--ink)}
+.ticks .incl{font-style:italic}
+.pass .btn{justify-self:start}
+
+/* forms */
+.form{display:grid;gap:20px;min-width:0}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 20px}
+.fields .full{grid-column:1/-1}
+@media (max-width:560px){.fields{grid-template-columns:1fr}}
+.fld{display:grid;gap:6px}
+label,legend{font-family:var(--narrow);font-stretch:72%;font-weight:700;text-transform:uppercase;font-size:1rem;letter-spacing:.02em}
+label i{font-family:var(--body);font-stretch:100%;font-style:normal;font-weight:400;text-transform:none;font-size:.875rem;letter-spacing:0}
+input[type=text],input[type=email],input[type=tel],input[type=date],input[type=number],select,textarea{width:100%;font:inherit;font-size:1rem;color:var(--ink);background:var(--cream);border:2px solid var(--ink);border-radius:0;padding:10px 12px;min-height:48px}
+textarea{min-height:110px;resize:vertical}
+fieldset{border:0;margin:0;padding:0;display:grid;gap:10px;min-width:0}
+.tier-pick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:560px){.tier-pick{grid-template-columns:1fr}}
+.tier-opt{position:relative;display:grid;grid-template-columns:auto 1fr;gap:0 12px;align-items:center;border:2px solid var(--ink);padding:10px 12px;background:var(--cream);cursor:pointer;font-family:var(--body);font-stretch:100%;font-size:1rem;font-weight:400;text-transform:none;letter-spacing:0}
+.tier-opt input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer}
+.tier-opt .sw{grid-row:1/3;width:40px;height:40px}
+.tier-opt b{font-family:var(--narrow);font-stretch:70%;font-weight:800;text-transform:uppercase;font-size:1.35rem;line-height:1}
+.tier-opt small{font-size:.875rem}
+.tier-opt:has(input:checked){background:var(--ink);color:var(--cream)}
+.tier-opt:has(input:focus-visible){outline:3px solid var(--magenta);outline-offset:3px}
+.amount{display:grid;grid-template-columns:1fr auto;gap:8px 20px;align-items:center}
+.amount output{font-family:var(--narrow);font-stretch:62%;font-weight:800;font-size:3.6rem;line-height:.85;font-variant-numeric:tabular-nums}
+.amount output small{font-family:var(--body);font-stretch:100%;font-size:.8125rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
+.range-ends{display:flex;justify-content:space-between;font-size:.875rem;font-weight:600;font-variant-numeric:tabular-nums}
+.fine{font-size:.9063rem;line-height:1.5;max-width:65ch}
+.status{background:var(--ink);color:var(--cream);padding:14px 18px;display:grid;gap:4px}
+.status b{font-family:var(--narrow);font-stretch:70%;font-weight:800;text-transform:uppercase;font-size:1.3rem}
+
+/* press */
+.press{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:clamp(14px,2vw,24px)}
+@media (max-width:820px){.press{grid-template-columns:1fr}}
+.press .block{padding:clamp(22px,3vw,34px);gap:14px;color:var(--ink)}
+.press .src{font-family:var(--narrow);font-stretch:72%;font-weight:700;text-transform:uppercase;font-size:1.1rem;letter-spacing:.03em}
+.press .hed{font-family:var(--narrow);font-stretch:66%;font-weight:800;text-transform:uppercase;font-size:clamp(1.9rem,3.4vw,2.8rem);line-height:.92}
+.press blockquote{margin:0;font-family:var(--narrow);font-stretch:66%;font-weight:800;text-transform:uppercase;font-size:clamp(2.4rem,4.6vw,3.8rem);line-height:.9}
+.press cite{font-style:normal;font-size:.9688rem}
+
+/* ---------- the pill (a nod to the cookie banner) ---------- */
+.pill{position:fixed;left:clamp(12px,3vw,40px);right:clamp(12px,3vw,40px);bottom:clamp(12px,3vw,32px);z-index:25;background:var(--lav);border-radius:44px;padding:18px 18px 18px clamp(22px,3vw,40px);display:grid;grid-template-columns:1fr auto auto;gap:14px 20px;align-items:center;box-shadow:0 10px 30px rgba(11,11,11,.18)}
+.pill p{font-family:var(--narrow);font-stretch:66%;font-weight:800;text-transform:uppercase;font-size:clamp(1.4rem,2.6vw,2.2rem);line-height:.92}
+.pill form{display:flex;gap:10px}
+.pill input[type=email]{min-height:52px;width:min(280px,40vw);background:var(--cream)}
+.pill .x{width:44px;height:44px;border:0;background:none;font-size:2rem;line-height:1;cursor:pointer;color:var(--ink)}
+.pill .status{grid-column:1/-1;border-radius:18px}
+.pill-go{display:none}
+@media (max-width:860px){.pill{grid-template-columns:1fr auto;border-radius:26px}.pill form{grid-column:1/-1;grid-row:2}.pill .x{grid-column:2;grid-row:1}.pill input[type=email]{width:100%}}
+@media (max-width:700px){.pill{right:12px;left:12px;bottom:12px;padding:12px 10px 12px 18px;grid-template-columns:1fr auto auto;gap:10px}.pill p{font-size:1.15rem}.pill form{display:none}.pill-go{display:inline-flex;grid-column:2;grid-row:1}.pill .x{grid-column:3;grid-row:1;width:36px;height:36px}}
+
+/* ---------- footer ---------- */
+.foot{background:var(--rail);color:var(--cream)}
+.foot-in{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr) minmax(0,1fr);gap:clamp(24px,4vw,56px);padding:clamp(40px,6vw,72px) var(--gutter)}
+@media (max-width:860px){.foot-in{grid-template-columns:1fr}}
+.foot .col{display:grid;gap:12px;align-content:start}
+.foot .tiles{--t:clamp(28px,3.4vw,40px)}
+.foot .tiles span{background:var(--cream);color:var(--ink)}
+.foot .tiles span:nth-child(even){background:var(--ink);color:var(--cream)}
+.foot h2{font-size:1.6rem}
+.foot ul{display:grid;gap:4px}
+.foot ul a{font-family:var(--narrow);font-stretch:72%;font-weight:700;text-transform:uppercase;font-size:1.3rem;text-decoration:none}
+.foot ul a:hover{text-decoration:underline}
+.foot-base{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 24px;padding:16px var(--gutter) 22px;border-top:2px solid rgba(251,248,239,.4);font-family:var(--narrow);font-stretch:72%;font-weight:700;text-transform:uppercase;font-size:.95rem;letter-spacing:.03em}
+
+@media (prefers-reduced-motion:reduce){.crop img,.swatch,.btn{transition:none}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <a class="tiles" href="#home" aria-label="Sucka Free Collective, home"><span>S</span><span>U</span><span>C</span><span>K</span><span>A</span><span class="star"></span><span>F</span><span>R</span><span>E</span><span>E</span></a>
+    <nav class="nav" aria-label="Main">
+      <ul>
+        <li><a href="#mission">Mission</a></li>
+        <li><a href="#space">The Space</a></li>
+        <li><a href="#events">Events</a></li>
+        <li><a href="#membership">Membership</a></li>
+        <li><a href="#support">Support</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+    <button type="button" class="burger" id="menu-open" aria-controls="menu" aria-expanded="false"><svg viewBox="0 0 34 34" aria-hidden="true"><rect x="2" y="5" width="30" height="4.4"/><rect x="2" y="14.8" width="30" height="4.4"/><rect x="2" y="24.6" width="30" height="4.4"/></svg><span class="sr">Open menu</span></button>
+    <a class="btn btn--solid cta" href="#rent">Rent the space</a>
+  </div>
+</header>
+
+<div class="menu" id="menu" hidden role="dialog" aria-modal="true" aria-label="Menu">
+  <div class="band" aria-hidden="true"></div>
+  <div>
+    <div class="menu-list">
+      <a class="btn btn--solid menu-cta" href="#rent">Rent the space</a>
+      <a href="#mission">Mission</a>
+      <a href="#space">The Space</a>
+      <a href="#events">Events</a>
+      <a href="#membership">Membership</a>
+      <a href="#support">Support</a>
+      <a href="#rent">Rent the Space</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <div class="menu-foot"><button class="btn btn--solid" type="button" id="menu-close">Close menu</button><a class="btn" href="https://www.instagram.com/suckafreecollective415/" target="_blank" rel="noopener">Instagram</a></div>
+  </div>
+</div>
+
+<main>
+
+<!-- ======================= HOME ======================= -->
+<section data-view="home">
+  <h1 class="sr">Sucka Free Collective</h1>
+  <div class="hero" id="hero">
+    <img class="on" src="img/garage.webp" alt="Six collective members in the warehouse garage door holding the hand-sewn Sucka Free Collective banner" style="object-position:50% 70%">
+    <img src="img/circle.webp" alt="A full room sitting in a circle on the warehouse floor during a gathering" loading="lazy">
+    <img src="img/dance.webp" alt="The warehouse set up for a dance night, with a glowing grid floor and DJ decks" loading="lazy">
+    <img src="img/crew.webp" alt="Collective members waving behind the Sucka Free Collective banner" loading="lazy" style="object-position:50% 30%">
+    <img src="img/workshop.webp" alt="An artist-led workshop around a long table in the warehouse" loading="lazy" style="object-position:50% 60%">
+    <img src="img/bus.webp" alt="Altared SF, the Muni Raised Me bus, wearing the banner at a parade" loading="lazy" style="object-position:50% 62%">
+    <img src="img/painting.webp" alt="An artist painting in front of a neon mural inside the warehouse" loading="lazy" style="object-position:50% 40%">
+    <button type="button" class="hero-toggle" id="hero-toggle" aria-pressed="false"><svg viewBox="0 0 34 34" aria-hidden="true" id="hero-icon"><rect x="7" y="5" width="7" height="24"/><rect x="20" y="5" width="7" height="24"/></svg><span class="sr" id="hero-sr">Pause the photo slideshow</span></button>
+    <div class="hero-labels">
+      <span class="label hero-tag">An art gym in the Bayview</span>
+      <div class="hero-name">
+        <a class="label" href="#events">Muni Raised Me 2</a>
+        <span class="label label--ink">Opens April 15, 2027 · 415 Day</span>
+      </div>
+    </div>
+  </div>
+  <div class="bars" aria-hidden="true"></div>
+
+  <section class="field f-mustard">
+    <div class="wrap board">
+      <a class="board-a" href="#mission"><div class="crop blob"><img src="img/bus.webp" alt="Altared SF, the retired Muni bus turned mobile gallery, dressed up for a parade" loading="lazy" style="object-position:50% 40%"></div><span class="label">The bus</span></a>
+      <a class="board-b" href="#space"><div class="crop oval"><img src="img/workshop.webp" alt="People making art together at a workshop table" loading="lazy"></div><span class="label">The warehouse</span></a>
+      <a class="board-c" href="#rent"><div class="crop"><img src="img/dance.webp" alt="The warehouse event floor set up for a night of dancing" loading="lazy"></div><span class="label">Event floor, full sound system</span></a>
+    </div>
+  </section>
+
+  <section class="field f-lav">
+    <div class="wrap stack">
+      <p class="statement">SF born &amp; raised artists building an art gym for the city that raised us.</p>
+      <div class="split" style="align-items:start">
+        <p class="lede">We are turning a former electrical warehouse in the Bayview into a place you come back to on a regular basis to practice creativity, build relationships and add to community life. Affordable workspace, shared tools, cultural programming and skill sharing for working artists and neighbors.</p>
+        <div class="btn-row"><a class="btn btn--solid" href="#membership">Become a member</a><a class="btn" href="#mission">Read our mission</a></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="field f-cream">
+    <div class="wrap stack">
+      <div class="head"><h2>Next stops</h2><a class="btn btn--sm" href="#events">Full calendar</a></div>
+      <ul class="timetable">
+        <li><span class="tt-date">Thu Apr 15, 2027</span><span class="tt-what"><strong>Muni Raised Me 2 opens</strong>An exhibition of all San Francisco born and raised artists, and our formal opening.</span><span class="chip" style="--c:var(--pink)">415 Day</span></li>
+        <li><span class="tt-date">Sat May 1, 2027</span><span class="tt-what"><strong>May Day at the warehouse</strong>A full day of public programming.</span><span class="chip" style="--c:var(--tomato)">May Day</span></li>
+        <li><span class="tt-date">Mon May 10, 2027</span><span class="tt-what"><strong>Closing night</strong>Last call for Muni Raised Me 2.</span><span class="chip" style="--c:var(--sky)">510 Day</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="field f-green" style="color:var(--cream)">
+    <div class="wrap stack">
+      <div class="head"><h2>In the news</h2></div>
+      <div class="press">
+        <a class="block b-cream" href="https://missionlocal.org/2026/04/sf-bayview-warehouse-sucka-free-collective/" target="_blank" rel="noopener" style="text-decoration:none">
+          <span class="src">Mission Local · April 2026</span>
+          <span class="hed">Could an S.F. warehouse built for a rapper's birthday stay forever?</span>
+          <blockquote>&ldquo;If not us, who is going to?&rdquo;</blockquote>
+          <cite>Meymey Lee, on keeping the warehouse open</cite>
+          <span class="btn btn--sm" style="justify-self:start">Read the story</span>
+        </a>
+        <a class="block b-mustard" href="https://insight.tveyes.com/public/share/1e7b2ab4-31c2-4cf3-a199-1316eef602b4/421b8e11-09de-4c4a-819b-f6af5bfb8eaf" target="_blank" rel="noopener" style="text-decoration:none;align-content:space-between">
+          <span class="src">On local TV</span>
+          <span class="hed">Pop Out to the Polls</span>
+          <span class="btn btn--sm" style="justify-self:start">Watch the clip</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <div class="bars" aria-hidden="true"></div>
+
+  <section class="field f-sky">
+    <div class="wrap stack">
+      <div class="head"><h2>Get your pass</h2><a class="btn btn--sm" href="#membership">Compare all four</a></div>
+      <p class="lede" style="max-width:52ch">Our community membership is launching and members are helping shape it. Monthly, sliding scale: pay what you can inside each range.</p>
+      <div class="tiers">
+        <a class="tier" href="#membership" data-tier="supporter"><div class="swatch pat-stripe"><span class="label">Supporter</span></div><div class="tier-meta"><span>Help support the space</span><span>$5–20</span></div></a>
+        <a class="tier" href="#membership" data-tier="community"><div class="swatch pat-dots"><span class="label">Community Artist</span></div><div class="tier-meta"><span>Make work here</span><span>$25–75</span></div></a>
+        <a class="tier" href="#membership" data-tier="resident"><div class="swatch pat-check"><span class="label">Resident Artist</span></div><div class="tier-meta"><span>Keys, storage</span><span>$75–125</span></div></a>
+        <a class="tier" href="#membership" data-tier="partner"><div class="swatch pat-wave"><span class="label">Partner Org</span></div><div class="tier-meta"><span>Bring your group</span><span>$100–250</span></div></a>
+      </div>
+    </div>
+  </section>
+</section>
+
+<!-- ======================= MISSION ======================= -->
+<section data-view="mission" hidden>
+  <div class="page-head" style="--f:var(--sky)"><div class="wrap"><div><h1>Mission</h1><p class="sub"><span class="label">Why we hop on the back of the bus</span></p></div><div class="crop oval"><img src="img/sutro.webp" alt="Sutro Tower against a sunset sky" loading="lazy"></div></div></div>
+  <div class="bars" aria-hidden="true"></div>
+  <section class="field f-cream">
+    <div class="wrap split" style="align-items:start">
+      <div class="prose">
+        <h2 style="font-size:clamp(2.6rem,5vw,4rem)">What we're here to do</h2>
+        <p>Sucka Free Collective supports working artists rooted in the San Francisco Bay Area by cultivating accessible spaces where artists, neighbors and community members can make, learn, rehearse, celebrate, and care for one another.</p>
+        <p>Through shared creative resources, affordable workspace, cultural programming and skill sharing, we are building a home where people move from attending events to becoming collaborators, contributors and community stewards.</p>
+        <p>We are based in the Bayview, one of San Francisco's last Black neighborhoods, and we are committed to celebrating and growing San Francisco born and raised artists.</p>
+        <p>The building was Meymey Lee's father's electrical shop. When he handed over the lease, we saw a chance to keep one creative space open while so many across the city close. We built it out by hand, mostly with donated materials and finds from SCRAP.</p>
+      </div>
+      <p class="quote">Culture pre-dates politics.</p>
+    </div>
+  </section>
+  <section class="field f-mustard">
+    <div class="wrap stack">
+      <div class="head"><h2>Shared values</h2></div>
+      <div class="blocks">
+        <div class="block b-cream"><h3>Accessibility</h3><p>Sliding scale dues, an ADA accessible first floor, free parking and a train nearby. Getting in the door should never be the hard part.</p></div>
+        <div class="block b-pink"><h3>Radical imagination</h3><p>We live, create and dream with the most radical of imaginations so that our most radical dreams become reality.</p></div>
+        <div class="block b-green"><h3>Joy</h3><p>Clothing swaps, dance parties, craft nights and live shows. Joyful creative spaces make stronger neighborhoods and better organizing.</p></div>
+      </div>
+    </div>
+  </section>
+  <section class="field f-lav">
+    <div class="wrap split">
+      <div class="prose">
+        <h2 style="font-size:clamp(2.6rem,5vw,4rem)">Muni Raised Me</h2>
+        <p>Sucka Free grew out of Muni Raised Me, a community arts project celebrating the role San Francisco's public transit system has played in connecting and raising generations of working class city residents.</p>
+        <p>The first show opened at SOMArts in the spring of 2023: a gathering of the hyphy and the rooted, featuring all San Francisco born and raised artists. More than 800 people came through for the opening and closing.</p>
+        <p>Its centerpiece, <em>Altared SF</em>, is a retired Muni bus that SFMTA donated for the <a href="https://somarts.org/exhibition/muniraisedme/" target="_blank" rel="noopener">SOMArts exhibition</a>, transformed into a mobile gallery, living altar and immersive installation. Today the bus lives at our warehouse and still rolls out to community activations across the city. Muni Raised Me 2 opens here on April 15, 2027.</p>
+        <div class="btn-row"><a class="btn btn--solid" href="#events">See the dates</a></div>
+      </div>
+      <div class="crop blob" style="aspect-ratio:4/5;max-width:440px;justify-self:center;width:100%"><img src="img/bus.webp" alt="Altared SF, the Muni Raised Me bus, at a parade with ladders on its roof and the Sucka Free banner on its grille" loading="lazy" style="object-position:50% 40%"></div>
+    </div>
+  </section>
+  <section class="field f-sky">
+    <div class="wrap stack">
+      <div class="head"><h2>An arts resilience hub</h2><span class="cap" style="font-size:1.3rem">What we're building toward</span></div>
+      <p class="lede" style="max-width:62ch">We are growing a network around a place: the warehouse and the Bayview's community, ecology and infrastructure. The goal is a space where artists get ready for hard times together and show up for the neighborhood when they come.</p>
+      <div class="blocks">
+        <div class="block b-cream"><h3>Practice</h3><p>A demonstration space where artists practice preparedness, with readiness trainings alongside the art.</p></div>
+        <div class="block b-mustard"><h3>Prepare</h3><p>A place to build and store what we will need: shared storage, a loading door, a big ADA accessible ground floor, free parking and the T line nearby.</p></div>
+        <div class="block b-pink"><h3>Show up</h3><p>A staging point for mutual aid. In an emergency the bus can carry supplies, serve as a mobile check-in point and bring readiness training to other arts spaces.</p></div>
+      </div>
+      <p class="fine" style="max-width:68ch">The network starts with core members who have studios, storage or rehearsal time here, then the regulars who return to our gatherings, then other artist-run spaces in southeast San Francisco. Bayview–Hunters Point (94124) first. Meymey Lee and Dante Garcia co-lead with a steering circle of core members.</p>
+    </div>
+  </section>
+  <section class="field f-cream">
+    <div class="wrap stack">
+      <div class="head"><h2>The crew</h2><span class="cap" style="font-size:1.3rem">Artist led, cooperatively run</span></div>
+      <p class="lede" style="max-width:60ch">The warehouse is the creative home of 20 Bay Area rooted artists. Nine of us share cooperative leadership, all San Francisco born and raised. Our leadership is predominantly people of color, mostly women and queer people.</p>
+      <div class="crew">
+        <div class="block b-sky"><h3>Alejandra Rubio</h3><p class="cap">Printmaking lead</p><p>Printmaker, cultural curator and community advocate from San Francisco. Ale leads our printmaking and screen printing space and is a tireless advocate for the Bayview, where she lives.</p></div>
+        <div class="block b-tomato"><h3>Adam Traore, A-1</h3><p class="cap">Music and build</p><p>Local hip hop legend and our resident handyman. Adam is helping us create an accessible venue through his music network and his carpentry.</p></div>
+        <div class="block b-lav"><h3>Meymey Lee</h3><p class="cap">Operations</p><p>Born and raised San Franciscan dedicated to celebrating our shared values across communities. Meymey supports the operations and administration of an active arts space, and co-leads our resilience network.</p></div>
+        <div class="block b-mustard"><h3>Dante Garcia</h3><p class="cap">Co-lead</p><p>Co-leads the resilience network with Meymey and a steering circle of core members.</p></div>
+      </div>
+      <div class="head" style="margin-top:12px"><h2 style="font-size:clamp(2rem,4vw,3rem)">Friends of the space</h2></div>
+      <ul class="tags"><li>SOMArts</li><li>Unity Fest</li><li>Carnaval San Francisco</li><li>San Francisco Rising</li></ul>
+    </div>
+  </section>
+</section>
+
+<!-- ======================= THE SPACE ======================= -->
+<section data-view="space" hidden>
+  <div class="page-head" style="--f:var(--rail);color:var(--cream)"><div class="wrap"><div><h1>The Space</h1><p class="sub"><span class="label">4,000 square feet in the Bayview</span></p></div><div class="crop arch"><img src="img/garage.webp" alt="The warehouse garage door at 125 Quint St with collective members out front" loading="lazy"></div></div></div>
+  <div class="bars" aria-hidden="true"></div>
+  <section class="field f-cream">
+    <div class="wrap stack">
+      <div class="split" style="align-items:start">
+        <div class="prose"><h2 style="font-size:clamp(2.6rem,5vw,4rem)">A former electrical warehouse, rewired</h2><p>Two stories, two garage doors and room for a retired Muni bus. The warehouse is family owned and commercially zoned, with studios to make work in and an open floor to share it on.</p><p>Artist studios upstairs look out over the city's industrial southeast. Downstairs, the stage was built from scrap wood and much of the room came from donations and SCRAP. Young artists with large-scale projects store work here when they have nowhere else to put it.</p><div class="btn-row"><a class="btn btn--solid" href="#rent">Rent the space</a><a class="btn" href="#membership">Get member access</a></div></div>
+        <div class="facts" style="grid-template-columns:repeat(2,minmax(0,1fr))"><div><b>4,000</b><span>square feet</span></div><div><b>2</b><span>stories</span></div><div><b>2</b><span>garage doors</span></div><div><b>2</b><span>bathrooms</span></div></div>
+      </div>
+    </div>
+  </section>
+  <section class="field f-pink">
+    <div class="wrap stack">
+      <div class="head"><h2>Inside</h2></div>
+      <div class="gallery">
+        <figure><div class="crop pebble"><img src="img/painting.webp" alt="An artist painting in front of a neon mural" loading="lazy"></div><figcaption>Build space</figcaption></figure>
+        <figure><div class="crop oval"><img src="img/workshop.webp" alt="A workshop around a long table" loading="lazy"></div><figcaption>Workshop tables</figcaption></figure>
+        <figure><div class="crop arch"><img src="img/games.webp" alt="Members at a card table with a dog asleep on the floor" loading="lazy"></div><figcaption>Hang out space</figcaption></figure>
+        <figure><div class="crop blob"><img src="img/dance.webp" alt="The event floor set up for a dance night" loading="lazy"></div><figcaption>Event floor</figcaption></figure>
+      </div>
+    </div>
+  </section>
+  <section class="field f-cream">
+    <div class="wrap" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:clamp(24px,4vw,48px)">
+      <div class="stack" style="gap:16px"><h3 style="font-size:2.4rem">Studios and gear</h3><ul class="list"><li>Screen printing studio</li><li>Music room</li><li>Build space</li><li>Event and workshop space</li><li>Full sound system</li></ul></div>
+      <div class="stack" style="gap:16px"><h3 style="font-size:2.4rem">The building</h3><ul class="list"><li>ADA accessible first floor</li><li>Upstairs kitchen</li><li>Two bathrooms</li><li>Free WiFi</li><li>Loading door</li><li>Commercially zoned, family owned</li></ul></div>
+      <div class="stack" style="gap:16px"><h3 style="font-size:2.4rem">Getting here</h3><ul class="list"><li>125 Quint St, Bayview</li><li>T line nearby</li><li>Free parking</li><li>Park and water access close by</li></ul></div>
+    </div>
+  </section>
+  <section class="field f-mustard">
+    <div class="wrap stack">
+      <div class="head"><h2>Ways to use it</h2><a class="btn btn--sm" href="#rent">Ask about a booking</a></div>
+      <ul class="tags"><li>Events, workshops and trainings</li><li>Venue and rehearsal rentals</li><li>Co-working</li><li>Retreat and meeting space</li><li>Residency for artists</li></ul>
+    </div>
+  </section>
+</section>
+
+<!-- ======================= EVENTS ======================= -->
+<section data-view="events" hidden>
+  <div class="page-head" style="--f:var(--mustard)"><div class="wrap"><div><h1>Events</h1><p class="sub"><span class="label">What's on at the warehouse</span></p></div><div class="crop pebble"><img src="img/circle.webp" alt="A full room gathered in a circle on the warehouse floor" loading="lazy"></div></div></div>
+  <div class="bars" aria-hidden="true"></div>
+  <section class="field f-cream">
+    <div class="wrap stack">
+      <div class="head"><h2>Muni Raised Me 2</h2><span class="cap" style="font-size:1.3rem">Apr 15 to May 10, 2027</span></div>
+      <p class="lede" style="max-width:60ch">Our formal opening. An exhibition of all San Francisco born and raised artists, some returning and some found through a curated open call, with local muralists painting our walls and a revamped interior for the bus.</p>
+      <ul class="timetable">
+        <li><span class="tt-date">Thu Apr 15, 2027</span><span class="tt-what"><strong>Opening</strong>Doors open on the exhibition and on the warehouse, officially.</span><span class="chip" style="--c:var(--pink)">415 Day</span></li>
+        <li><span class="tt-date">Weekly, Apr 15 to May 10</span><span class="tt-what"><strong>Craft nights</strong>Come make something with us every week of the run.</span><span class="chip" style="--c:var(--lav)">Weekly</span></li>
+        <li><span class="tt-date">Sat May 1, 2027</span><span class="tt-what"><strong>May Day</strong>A day of public programming at the warehouse.</span><span class="chip" style="--c:var(--tomato)">May Day</span></li>
+        <li><span class="tt-date">Mon May 10, 2027</span><span class="tt-what"><strong>Closing</strong>The last night of the show.</span><span class="chip" style="--c:var(--sky)">510 Day</span></li>
+      </ul>
+    </div>
+  </section>
+  <section class="field f-lav">
+    <div class="wrap stack">
+      <div class="head"><h2>On regular rotation</h2><span class="cap" style="font-size:1.3rem">Dates go up on Instagram</span></div>
+      <div class="blocks">
+        <div class="block b-cream"><h3>Clothing swaps</h3><p>Every season. Bring what you're done with, leave with something new to you, and tell us what you want to learn or teach next.</p></div>
+        <div class="block b-pink"><h3>Sewing workshops</h3><p>Sewing and visible mending circles for first timers and regulars.</p></div>
+        <div class="block b-sky"><h3>Screen printing</h3><p>Print sessions and trainings in the studio.</p></div>
+        <div class="block b-mustard"><h3>Live music</h3><p>Shows, music gatherings and band practice.</p></div>
+        <div class="block b-green"><h3>Organizing nights</h3><p>Monthly organizing events and art builds.</p></div>
+        <div class="block b-ink"><h3>Dance parties</h3><p>Covid conscious parties on the event floor.</p></div>
+        <div class="block b-tomato"><h3>Pop Out to the Polls</h3><p>Part of our season programming, and featured on local TV.</p><a class="btn btn--sm" href="https://insight.tveyes.com/public/share/1e7b2ab4-31c2-4cf3-a199-1316eef602b4/421b8e11-09de-4c4a-819b-f6af5bfb8eaf" target="_blank" rel="noopener">Watch the clip</a></div>
+        <div class="block b-lav"><h3>Unity Fest</h3><p>Part of our fall and winter season.</p></div>
+      </div>
+      <div class="btn-row"><a class="btn btn--solid" href="https://www.instagram.com/suckafreecollective415/" target="_blank" rel="noopener">Follow @suckafreecollective415</a><a class="btn" href="#rent">Host your own event</a></div>
+    </div>
+  </section>
+  <section class="field f-cream">
+    <div class="wrap stack">
+      <div class="head"><h2>Past stops</h2></div>
+      <ul class="timetable">
+        <li><span class="tt-date">Sat Apr 4, 2026</span><span class="tt-what"><strong>A-1's birthday show</strong>The first show on our new stage, built from scrap wood over three months. About 150 people came out for A-1 and the drum group Bateria Batuki, pay what you can. <a href="https://missionlocal.org/2026/04/sf-bayview-warehouse-sucka-free-collective/" target="_blank" rel="noopener">Mission Local covered it</a>.</span><span class="chip" style="--c:var(--cream);border:2px solid var(--ink)">Show</span></li>
+        <li><span class="tt-date">Sat Jan 31, 2026</span><span class="tt-what"><strong>Open house</strong>Photobooth, clothing swap, music, studio tours and a visit to the Muni Raised Me bus.</span><span class="chip" style="--c:var(--cream);border:2px solid var(--ink)">Open house</span></li>
+        <li><span class="tt-date">Spring 2023</span><span class="tt-what"><strong>Muni Raised Me at SOMArts</strong>The first show, featuring all San Francisco born and raised artists and <em>Altared SF</em>. Over 800 people at the opening and closing.</span><span class="chip" style="--c:var(--cream);border:2px solid var(--ink)">Exhibition</span></li>
+      </ul>
+    </div>
+  </section>
+</section>
+
+<!-- ======================= MEMBERSHIP ======================= -->
+<section data-view="membership" hidden>
+  <div class="page-head" style="--f:var(--pink)"><div class="wrap"><div><h1>Membership</h1><p class="sub"><span class="label">Get your pass. Help shape it.</span></p></div><div class="crop oval"><img src="img/crew.webp" alt="Collective members waving behind the Sucka Free Collective banner" loading="lazy" style="object-position:50% 30%"></div></div></div>
+  <div class="bars" aria-hidden="true"></div>
+  <section class="field f-cream">
+    <div class="wrap split" style="align-items:start">
+      <div class="prose">
+        <h2 style="font-size:clamp(2.6rem,5vw,4rem)">Keep this warehouse open</h2>
+        <p>Sucka Free Collective, aka this warehouse, is launching a community membership program. Members keep the doors open for everyone, and get a place to make work, learn skills and gather.</p>
+        <p>Dues are sliding scale. Choose the tier that matches how you want to use the space, then pay what you can inside its range. Every tier includes everything in the tiers before it.</p>
+        <p>The program is new and we are shaping it with you. Tell us what you would change when you sign up.</p>
+      </div>
+      <div class="block b-mustard">
+        <h3>Every member gets</h3>
+        <ul class="ticks"><li>To keep the warehouse open for everyone</li><li>15% off events and workshops</li><li>Early invites and members only events</li><li>Snail mail art, monthly or quarterly</li><li>A say in each season's programming survey</li></ul>
+      </div>
+    </div>
+  </section>
+  <section class="field f-sky">
+    <div class="wrap stack">
+      <div class="head"><h2>The four passes</h2><span class="cap" style="font-size:1.3rem">Sliding scale, per month</span></div>
+      <div class="passes">
+        <article class="pass"><div class="swatch pat-stripe"><span class="label">Tier 1</span></div><div class="pass-body"><h3 style="font-size:2rem">Supporter</h3><p class="pass-price">$5–20 <small>a month</small></p><ul class="ticks"><li><b>Help support the space</b></li><li>Keep the warehouse open for everyone</li><li>15% off events and workshops</li><li>Early invites and members only events</li><li>Monthly or quarterly snail mail art</li><li>A say in the season's programming survey</li></ul><a class="btn btn--sm" href="#membership" data-tier="supporter">Choose Supporter</a></div></article>
+        <article class="pass"><div class="swatch pat-dots"><span class="label">Tier 2</span></div><div class="pass-body"><h3 style="font-size:2rem">Community Artist</h3><p class="pass-price">$25–75 <small>a month</small></p><ul class="ticks"><li><b>Make work here</b></li><li>Open access to the space</li><li>Use of tools and equipment</li><li>Guest passes</li><li class="incl">Everything in Tier 1</li></ul><a class="btn btn--sm" href="#membership" data-tier="community">Choose Community Artist</a></div></article>
+        <article class="pass"><div class="swatch pat-check"><span class="label">Tier 3</span></div><div class="pass-body"><h3 style="font-size:2rem">Resident Artist</h3><p class="pass-price">$75–125 <small>a month</small></p><ul class="ticks"><li><b>Late nights, keys, storage</b></li><li>24/7 access</li><li>A storage shelf or space</li><li>First pick on scheduling</li><li class="incl">Everything in Tiers 1 and 2</li></ul><a class="btn btn--sm" href="#membership" data-tier="resident">Choose Resident Artist</a></div></article>
+        <article class="pass"><div class="swatch pat-wave"><span class="label">Tier 4</span></div><div class="pass-body"><h3 style="font-size:2rem">Partner Org / Sponsor</h3><p class="pass-price">$100–250 <small>a month</small></p><ul class="ticks"><li><b>Bring your group</b></li><li>4+ hours of room use for meetings</li><li>Community rate on venue rentals</li><li>Listed as a community partner</li></ul><a class="btn btn--sm" href="#membership" data-tier="partner">Choose Partner Org</a></div></article>
+      </div>
+    </div>
+  </section>
+  <section class="field f-lav" id="join-form-sec">
+    <div class="wrap stack">
+      <div class="head"><h2>Become a member</h2><span class="cap" style="font-size:1.3rem">Takes two minutes</span></div>
+      <form class="form" id="join-form" novalidate>
+        <fieldset>
+          <legend>Membership tier</legend>
+          <div class="tier-pick">
+            <label class="tier-opt"><input type="radio" name="tier" id="tier-supporter" value="supporter" data-name="Supporter" data-min="5" data-max="20" data-start="10" checked><span class="sw pat-stripe"></span><b>Supporter</b><small>$5–20 a month</small></label>
+            <label class="tier-opt"><input type="radio" name="tier" id="tier-community" value="community" data-name="Community Artist" data-min="25" data-max="75" data-start="45"><span class="sw pat-dots" style="background-size:20px 20px;background-image:radial-gradient(circle,var(--ink) 0 4px,transparent 5px)"></span><b>Community Artist</b><small>$25–75 a month</small></label>
+            <label class="tier-opt"><input type="radio" name="tier" id="tier-resident" value="resident" data-name="Resident Artist" data-min="75" data-max="125" data-start="95"><span class="sw pat-check" style="background-size:20px 20px"></span><b>Resident Artist</b><small>$75–125 a month</small></label>
+            <label class="tier-opt"><input type="radio" name="tier" id="tier-partner" value="partner" data-name="Partner Org / Sponsor" data-min="100" data-max="250" data-start="150"><span class="sw pat-wave" style="background-size:30px 15px"></span><b>Partner Org / Sponsor</b><small>$100–250 a month</small></label>
+          </div>
+        </fieldset>
+        <div class="fld">
+          <label for="join-amount">Your monthly amount, pay what you can</label>
+          <div class="amount">
+            <div style="display:grid;gap:4px"><input type="range" id="join-amount" name="amount" min="5" max="20" step="5" value="10"><div class="range-ends"><span id="join-min">$5</span><span id="join-max">$20</span></div></div>
+            <output id="join-amount-out" for="join-amount">$10 <small>a month</small></output>
+          </div>
+        </div>
+        <div class="fields">
+          <div class="fld"><label for="join-first">First name</label><input type="text" id="join-first" name="first" autocomplete="given-name" required></div>
+          <div class="fld"><label for="join-last">Last name</label><input type="text" id="join-last" name="last" autocomplete="family-name" required></div>
+          <div class="fld"><label for="join-email">Email</label><input type="email" id="join-email" name="email" autocomplete="email" required></div>
+          <div class="fld"><label for="join-phone">Phone <i>(optional)</i></label><input type="tel" id="join-phone" name="phone" autocomplete="tel"></div>
+          <div class="fld full" id="join-org-field" hidden><label for="join-org">Organization or group</label><input type="text" id="join-org" name="org" autocomplete="organization"></div>
+          <div class="fld full"><label for="join-skills">Skills you could share <i>(optional)</i></label><input type="text" id="join-skills" name="skills" placeholder="Sewing, sound, carpentry, cooking, grant writing…"></div>
+          <div class="fld full"><label for="join-notes">A tier we should add, or something you'd change <i>(optional)</i></label><textarea id="join-notes" name="notes"></textarea></div>
+        </div>
+        <div class="btn-row"><button class="btn btn--solid" type="submit">Send my membership request</button></div>
+        <div class="status" id="join-status" role="status" hidden></div>
+        <p class="fine">Send this form and a collective member will follow up with how to pay your first month and get you set up. Resident Artist spots include keys, so we will meet you in person first. Would you rather give once? <a href="#support">See ways to support</a>.</p>
+      </form>
+    </div>
+  </section>
+</section>
+
+<!-- ======================= SUPPORT ======================= -->
+<section data-view="support" hidden>
+  <div class="page-head" style="--f:var(--tomato)"><div class="wrap"><div><h1>Support</h1><p class="sub"><span class="label">Keep the bus running</span></p></div><div class="crop pebble"><img src="img/spiral.webp" alt="A green spiral sewn onto purple fabric, a square from the Sucka Free banner" loading="lazy"></div></div></div>
+  <div class="bars" aria-hidden="true"></div>
+  <section class="field f-cream">
+    <div class="wrap stack">
+      <p class="statement" style="max-width:20ch">Artist spaces in SF close when rent wins. Ours stays open because people chip in.</p>
+      <p class="lede">Sucka Free Collective is fiscally sponsored by <a href="https://somarts.org/" target="_blank" rel="noopener">SOMArts</a>.</p>
+      <div class="blocks">
+        <div class="block b-pink"><h3>Become a member</h3><p>The steadiest support there is. Monthly dues start at $5 and keep the warehouse open for everyone.</p><a class="btn btn--sm" href="#membership">See the passes</a></div>
+        <div class="block b-mustard"><h3>Give directly</h3><p>Make a one time or recurring donation toward rent, artist stipends and materials.</p><a class="btn btn--sm" href="#contact" data-topic="donate">Ask how to give</a></div>
+        <div class="block b-sky"><h3>Give in kind</h3><p>We are building a gear library. Screen printing supplies, sewing machines and notions, tools, music gear and art materials all get used.</p><a class="btn btn--sm" href="#contact" data-topic="inkind">Offer materials</a></div>
+        <div class="block b-lav"><h3>Volunteer</h3><p>Teach a skill, help run an event, welcome newcomers at the door, or join a work day at the warehouse.</p><a class="btn btn--sm" href="#contact" data-topic="volunteer">Sign up to help</a></div>
+        <div class="block b-green"><h3>Sponsor or partner</h3><p>Organizations and businesses can join as a Partner Org or sponsor a show, a workshop series or a season.</p><a class="btn btn--sm" href="#contact" data-topic="sponsor">Talk to us</a></div>
+      </div>
+    </div>
+  </section>
+  <section class="field f-mustard">
+    <div class="wrap stack">
+      <div class="head"><h2>What it builds</h2></div>
+      <div class="facts">
+        <div><b>Studios</b><span>Affordable workspace and storage for working artists</span></div>
+        <div><b>Gear</b><span>A shared library of tools, with training to use them on your own</span></div>
+        <div><b>Sound</b><span>A permanent sound system of our own. For our first show we borrowed the gear and returned it the next morning.</span></div>
+        <div><b>Stipends</b><span>Pay for artists and workshop facilitators</span></div>
+      </div>
+    </div>
+  </section>
+</section>
+
+<!-- ======================= RENT ======================= -->
+<section data-view="rent" hidden>
+  <div class="page-head" style="--f:var(--lav)"><div class="wrap"><div><h1>Rent the Space</h1><p class="sub"><span class="label">Shows, rehearsals, meetings, retreats</span></p></div><div class="crop oval"><img src="img/dance.webp" alt="The event floor set up for a dance night" loading="lazy"></div></div></div>
+  <div class="bars" aria-hidden="true"></div>
+  <section class="field f-cream">
+    <div class="wrap split" style="align-items:start">
+      <div class="stack" style="gap:22px">
+        <h2 style="font-size:clamp(2.6rem,5vw,4rem)">Bring your people here</h2>
+        <p class="lede">Book the warehouse for an event, a workshop or training, a rehearsal, a retreat or a meeting. Rentals help pay for the free and low cost programming we run for the neighborhood.</p>
+        <ul class="list"><li>4,000 sq ft, two stories</li><li>Full sound system</li><li>Upstairs kitchen</li><li>Two garage doors</li><li>ADA accessible first floor</li><li>Free parking, T line nearby</li><li>Free WiFi</li></ul>
+        <p class="fine">Partner Org members get 4+ hours of meeting room use and the community rate on venue rentals. <a href="#membership" data-tier="partner">See the Partner pass</a>.</p>
+      </div>
+      <form class="form block b-sky" id="rent-form" novalidate style="padding:clamp(20px,3vw,32px)">
+        <div class="fields">
+          <div class="fld"><label for="rent-name">Your name</label><input type="text" id="rent-name" name="name" autocomplete="name" required></div>
+          <div class="fld"><label for="rent-email">Email</label><input type="email" id="rent-email" name="email" autocomplete="email" required></div>
+          <div class="fld full"><label for="rent-org">Organization or group <i>(optional)</i></label><input type="text" id="rent-org" name="org" autocomplete="organization"></div>
+          <div class="fld"><label for="rent-type">What for</label>
+            <select id="rent-type" name="type" required><option value="">Choose one</option><option>Event or show</option><option>Workshop or training</option><option>Rehearsal</option><option>Meeting or retreat</option><option>Co-working</option><option>Artist residency</option><option>Something else</option></select></div>
+          <div class="fld"><label for="rent-date">Date in mind <i>(optional)</i></label><input type="date" id="rent-date" name="date"></div>
+          <div class="fld"><label for="rent-size">How many people <i>(optional)</i></label><input type="number" id="rent-size" name="size" min="1" inputmode="numeric"></div>
+          <div class="fld"><label for="rent-hours">How many hours <i>(optional)</i></label><input type="number" id="rent-hours" name="hours" min="1" inputmode="numeric"></div>
+          <div class="fld full"><label for="rent-notes">Tell us about it</label><textarea id="rent-notes" name="notes" required></textarea></div>
+        </div>
+        <div class="btn-row"><button class="btn btn--solid" type="submit">Send rental inquiry</button></div>
+        <div class="status" id="rent-status" role="status" hidden></div>
+      </form>
+    </div>
+  </section>
+</section>
+
+<!-- ======================= CONTACT ======================= -->
+<section data-view="contact" hidden>
+  <div class="page-head" style="--f:var(--sky)"><div class="wrap"><div><h1>Contact</h1><p class="sub"><span class="label">125 Quint St, Bayview</span></p></div><div class="crop arch"><img src="img/games.webp" alt="Members at a card table in the warehouse with a dog asleep nearby" loading="lazy"></div></div></div>
+  <div class="bars" aria-hidden="true"></div>
+  <section class="field f-cream">
+    <div class="wrap split" style="align-items:start">
+      <div class="stack" style="gap:20px">
+        <h2 style="font-size:clamp(2.6rem,5vw,4rem)">Find us</h2>
+        <p class="lede">125 Quint St, San Francisco, CA 94124. The T line stops nearby and parking is free.</p>
+        <p class="lede">Email <a href="mailto:suckafreecollective415@gmail.com">suckafreecollective415@gmail.com</a></p>
+        <p class="lede">Instagram <a href="https://www.instagram.com/suckafreecollective415/" target="_blank" rel="noopener">@suckafreecollective415</a></p>
+        <div class="btn-row"><a class="btn btn--solid" href="#rent">Rent the space</a><a class="btn" href="#membership">Become a member</a></div>
+      </div>
+      <form class="form block b-mustard" id="contact-form" novalidate style="padding:clamp(20px,3vw,32px)">
+        <div class="fields">
+          <div class="fld"><label for="contact-name">Your name</label><input type="text" id="contact-name" name="name" autocomplete="name" required></div>
+          <div class="fld"><label for="contact-email">Email</label><input type="email" id="contact-email" name="email" autocomplete="email" required></div>
+          <div class="fld full"><label for="contact-topic">What's this about</label>
+            <select id="contact-topic" name="topic"><option value="general">General question</option><option value="donate">Making a donation</option><option value="inkind">Donating materials or gear</option><option value="volunteer">Volunteering or teaching a skill</option><option value="sponsor">Sponsorship or partnership</option><option value="press">Press or collaboration</option></select></div>
+          <div class="fld full"><label for="contact-msg">Message</label><textarea id="contact-msg" name="msg" required></textarea></div>
+        </div>
+        <div class="btn-row"><button class="btn btn--solid" type="submit">Send message</button></div>
+        <div class="status" id="contact-status" role="status" hidden></div>
+      </form>
+    </div>
+  </section>
+</section>
+
+</main>
+
+<div class="bars" aria-hidden="true"></div>
+<footer class="foot">
+  <div class="foot-in">
+    <div class="col">
+      <a class="tiles" href="#home" aria-label="Sucka Free Collective, home"><span>S</span><span>U</span><span>C</span><span>K</span><span>A</span><span class="star"></span><span>F</span><span>R</span><span>E</span><span>E</span></a>
+      <h2>Sucka Free Collective</h2>
+      <p>SF born &amp; raised artist collective and warehouse in the Bayview. Home of Muni Raised Me and <em>Altared SF</em>. Fiscally sponsored by <a href="https://somarts.org/" target="_blank" rel="noopener">SOMArts</a>.</p>
+      <p>125 Quint St, San Francisco, CA 94124<br><a href="mailto:suckafreecollective415@gmail.com">suckafreecollective415@gmail.com</a><br><a href="https://www.instagram.com/suckafreecollective415/" target="_blank" rel="noopener">@suckafreecollective415</a></p>
+    </div>
+    <div class="col">
+      <ul><li><a href="#mission">Mission</a></li><li><a href="#space">The Space</a></li><li><a href="#events">Events</a></li><li><a href="#membership">Membership</a></li><li><a href="#support">Support</a></li><li><a href="#rent">Rent the Space</a></li><li><a href="#contact">Contact</a></li></ul>
+    </div>
+    <div class="col">
+      <h2>Get updates</h2>
+      <p>Early word on shows, swaps and workshops.</p>
+      <form class="form" id="list-form" novalidate style="gap:10px">
+        <div class="fld"><label for="list-email">Email</label><input type="email" id="list-email" name="email" autocomplete="email" required></div>
+        <div class="btn-row"><button class="btn btn--sm" type="submit" style="border-color:var(--cream);color:var(--cream)">Sign me up</button></div>
+        <div class="status" id="list-status" role="status" hidden></div>
+      </form>
+    </div>
+  </div>
+  <div class="foot-base"><span>© 2026 Sucka Free Collective</span><span>Bayview · San Francisco · Yelamu</span></div>
+</footer>
+
+<div class="pill" id="pill" hidden role="region" aria-label="Get updates">
+  <p>We make art to improve your neighborhood</p>
+  <form id="pill-form" novalidate><label class="sr" for="pill-email">Email</label><input type="email" id="pill-email" placeholder="Your email" autocomplete="email" required><button class="btn" type="submit">Keep me posted</button></form>
+  <a class="btn btn--sm pill-go" href="#list-email">Get updates</a>
+  <button class="x" type="button" id="pill-close" aria-label="Close">×</button>
+  <div class="status" id="pill-status" role="status" hidden></div>
+</div>
+
+<script>
+(function(){
+  var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---------- pages ----------
+  var views = Array.prototype.slice.call(document.querySelectorAll('main > [data-view]'));
+  var names = views.map(function(v){ return v.getAttribute('data-view'); });
+  var current = null;
+  function show(name){
+    if (names.indexOf(name) === -1) name = 'home';
+    closeMenu();
+    if (name === current) return;
+    current = name;
+    views.forEach(function(v){ v.hidden = v.getAttribute('data-view') !== name; });
+    document.querySelectorAll('.nav a, .menu-list a, .cta').forEach(function(a){
+      if (a.getAttribute('href') === '#' + name) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+    });
+    window.scrollTo(0, 0);
+  }
+  window.addEventListener('hashchange', function(){ show((location.hash || '').slice(1) || 'home'); });
+  document.addEventListener('click', function(e){
+    var a = e.target.closest ? e.target.closest('a[href^="#"]') : null;
+    if (!a) return;
+    var name = a.getAttribute('href').slice(1);
+    if (names.indexOf(name) === -1) return;
+    e.preventDefault();
+    show(name);
+    try { if (location.hash !== '#' + name) location.hash = name; } catch(err){}
+    var tier = a.getAttribute('data-tier'); if (tier) pickTier(tier, true);
+    var topic = a.getAttribute('data-topic'); if (topic) { var sel = document.getElementById('contact-topic'); if (sel) sel.value = topic; }
+  });
+
+  // ---------- menu ----------
+  var menu = document.getElementById('menu'), openBtn = document.getElementById('menu-open');
+  function openMenu(){ menu.hidden = false; openBtn.setAttribute('aria-expanded', 'true'); var f = menu.querySelector('.menu-list a'); if (f) f.focus(); }
+  function closeMenu(){ if (menu.hidden) return; menu.hidden = true; openBtn.setAttribute('aria-expanded', 'false'); }
+  openBtn.addEventListener('click', function(){ menu.hidden ? openMenu() : (closeMenu(), openBtn.focus()); });
+  document.getElementById('menu-close').addEventListener('click', function(){ closeMenu(); openBtn.focus(); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && !menu.hidden) { closeMenu(); openBtn.focus(); } });
+
+  // ---------- hero: stop-motion cuts ----------
+  var frames = Array.prototype.slice.call(document.querySelectorAll('#hero img'));
+  var fi = 0, paused = still, toggle = document.getElementById('hero-toggle');
+  function paintToggle(){
+    toggle.setAttribute('aria-pressed', paused ? 'true' : 'false');
+    document.getElementById('hero-icon').innerHTML = paused
+      ? '<path d="M8 4 30 17 8 30z"/>'
+      : '<rect x="7" y="5" width="7" height="24"/><rect x="20" y="5" width="7" height="24"/>';
+    document.getElementById('hero-sr').textContent = paused ? 'Play the photo slideshow' : 'Pause the photo slideshow';
+  }
+  toggle.addEventListener('click', function(){ paused = !paused; paintToggle(); });
+  paintToggle();
+  setInterval(function(){
+    if (paused || current !== 'home' || document.hidden) return;
+    frames[fi].classList.remove('on');
+    fi = (fi + 1) % frames.length;
+    frames[fi].classList.add('on');
+  }, 1150);
+
+  // ---------- membership form ----------
+  var amount = document.getElementById('join-amount'), out = document.getElementById('join-amount-out'), orgField = document.getElementById('join-org-field');
+  function paintAmount(){ out.innerHTML = '$' + amount.value + ' <small>a month</small>'; }
+  function applyTier(r){
+    amount.min = r.dataset.min; amount.max = r.dataset.max; amount.value = r.dataset.start;
+    document.getElementById('join-min').textContent = '$' + r.dataset.min;
+    document.getElementById('join-max').textContent = '$' + r.dataset.max;
+    orgField.hidden = r.value !== 'partner';
+    paintAmount();
+  }
+  function pickTier(value, scroll){
+    var r = document.getElementById('tier-' + value); if (!r) return;
+    r.checked = true; applyTier(r);
+    if (scroll) setTimeout(function(){ document.getElementById('join-form-sec').scrollIntoView({behavior: still ? 'auto' : 'smooth', block: 'start'}); }, 30);
+  }
+  document.querySelectorAll('input[name="tier"]').forEach(function(r){ r.addEventListener('change', function(){ applyTier(r); }); });
+  amount.addEventListener('input', paintAmount);
+
+  // ---------- forms: not connected yet ----------
+  function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  function wire(formId, statusId, summary){
+    var form = document.getElementById(formId), status = document.getElementById(statusId);
+    if (!form) return;
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      var bad = form.querySelector(':invalid');
+      status.hidden = false;
+      if (bad) {
+        var lab = form.querySelector('label[for="' + bad.id + '"]');
+        var what = lab ? lab.childNodes[0].textContent.trim() : 'your email';
+        status.innerHTML = '<b>One thing missing</b><span>Fill in "' + esc(what) + '" and send again.</span>';
+        bad.focus(); return;
+      }
+      status.innerHTML = '<b>Preview only. Nothing was sent.</b><span>' + summary(form) + ' This form is not connected yet. For now, email suckafreecollective415@gmail.com or message @suckafreecollective415 on Instagram.</span>';
+    });
+  }
+  wire('join-form', 'join-status', function(f){ var r = f.querySelector('input[name="tier"]:checked'); return 'You picked ' + r.dataset.name + ' at $' + amount.value + ' a month, ' + esc(f.elements.first.value) + '.'; });
+  wire('rent-form', 'rent-status', function(f){ return 'Your inquiry: ' + esc(f.elements.type.value) + '.'; });
+  wire('contact-form', 'contact-status', function(){ return 'Your message is still in the box above.'; });
+  wire('list-form', 'list-status', function(){ return 'You are not on the list yet.'; });
+  wire('pill-form', 'pill-status', function(){ return 'You are not on the list yet.'; });
+
+  // ---------- the pill ----------
+  var pill = document.getElementById('pill'), gone = false;
+  try { gone = localStorage.getItem('sfc-pill') === 'closed'; } catch(err){}
+  function maybePill(){ if (!gone && window.scrollY > window.innerHeight * .6) { pill.hidden = false; window.removeEventListener('scroll', maybePill); } }
+  window.addEventListener('scroll', maybePill, {passive: true});
+  function closePill(){ gone = true; pill.hidden = true; try { localStorage.setItem('sfc-pill', 'closed'); } catch(err){} }
+  document.getElementById('pill-close').addEventListener('click', closePill);
+  pill.querySelector('.pill-go').addEventListener('click', function(e){ e.preventDefault(); closePill(); var f = document.getElementById('list-email'); f.scrollIntoView({behavior: still ? 'auto' : 'smooth', block: 'center'}); setTimeout(function(){ f.focus({preventScroll: true}); }, 400); });
+
+  show((location.hash || '').slice(1) || 'home');
+})();
+</script>
+</body>
+</html>
