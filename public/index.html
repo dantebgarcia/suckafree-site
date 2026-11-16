@@ -276,6 +276,7 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
 .pill .x{width:44px;height:44px;border:0;background:none;font-size:2rem;line-height:1;cursor:pointer;color:var(--ink)}
 .pill .status{grid-column:1/-1;border-radius:18px}
 .pill-go{display:none}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 @media (max-width:860px){.pill{grid-template-columns:1fr auto;border-radius:26px}.pill form{grid-column:1/-1;grid-row:2}.pill .x{grid-column:2;grid-row:1}.pill input[type=email]{width:100%}}
 @media (max-width:700px){.pill{right:12px;left:12px;bottom:12px;padding:12px 10px 12px 18px;grid-template-columns:1fr auto auto;gap:10px}.pill p{font-size:1.15rem}.pill form{display:none}.pill-go{display:inline-flex;grid-column:2;grid-row:1}.pill .x{grid-column:3;grid-row:1;width:36px;height:36px}}
 
@@ -742,8 +743,10 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
     <div class="col">
       <h2>Get updates</h2>
       <p>Early word on shows, swaps and workshops.</p>
-      <form class="form" id="list-form" novalidate style="gap:10px">
-        <div class="fld"><label for="list-email">Email</label><input type="email" id="list-email" name="email" autocomplete="email" required></div>
+      <form class="form" id="list-form" novalidate style="gap:10px" data-source="footer">
+        <div class="fld"><label for="list-name">First name <i>(optional)</i></label><input type="text" id="list-name" name="name" autocomplete="given-name" maxlength="80"></div>
+        <div class="fld"><label for="list-email">Email</label><input type="email" id="list-email" name="email" autocomplete="email" required maxlength="254"></div>
+        <div class="hp" aria-hidden="true"><label for="list-hp">Leave this empty</label><input type="text" id="list-hp" name="website" tabindex="-1" autocomplete="off"></div>
         <div class="btn-row"><button class="btn btn--sm" type="submit" style="border-color:var(--cream);color:var(--cream)">Sign me up</button></div>
         <div class="status" id="list-status" role="status" hidden></div>
       </form>
@@ -754,7 +757,7 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
 
 <div class="pill" id="pill" hidden role="region" aria-label="Get updates">
   <p>We make art to improve your neighborhood</p>
-  <form id="pill-form" novalidate><label class="sr" for="pill-email">Email</label><input type="email" id="pill-email" placeholder="Your email" autocomplete="email" required><button class="btn" type="submit">Keep me posted</button></form>
+  <form id="pill-form" novalidate data-source="banner"><label class="sr" for="pill-email">Email</label><input type="email" id="pill-email" name="email" placeholder="Your email" autocomplete="email" required maxlength="254"><div class="hp" aria-hidden="true"><label for="pill-hp">Leave this empty</label><input type="text" id="pill-hp" name="website" tabindex="-1" autocomplete="off"></div><button class="btn" type="submit">Keep me posted</button></form>
   <a class="btn btn--sm pill-go" href="#list-email">Get updates</a>
   <button class="x" type="button" id="pill-close" aria-label="Close">×</button>
   <div class="status" id="pill-status" role="status" hidden></div>
@@ -858,8 +861,47 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
   wire('join-form', 'join-status', function(f){ var r = f.querySelector('input[name="tier"]:checked'); return 'You picked ' + r.dataset.name + ' at $' + amount.value + ' a month, ' + esc(f.elements.first.value) + '.'; });
   wire('rent-form', 'rent-status', function(f){ return 'Your inquiry: ' + esc(f.elements.type.value) + '.'; });
   wire('contact-form', 'contact-status', function(){ return 'Your message is still in the box above.'; });
-  wire('list-form', 'list-status', function(){ return 'You are not on the list yet.'; });
-  wire('pill-form', 'pill-status', function(){ return 'You are not on the list yet.'; });
+  // ---------- email sign-ups: saved by the site's backend ----------
+  function signup(formId, statusId, after){
+    var form = document.getElementById(formId), status = document.getElementById(statusId);
+    if (!form) return;
+    var busy = false;
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      if (busy) return;
+      var email = form.elements.email, btn = form.querySelector('button[type="submit"]');
+      status.hidden = false;
+      if (!email.value.trim() || !email.checkValidity()) {
+        status.innerHTML = '<b>Check your email address</b><span>It needs to look like name@example.com.</span>';
+        email.focus(); return;
+      }
+      busy = true; btn.disabled = true; status.innerHTML = '<b>Adding you…</b>';
+      fetch('/api/signup', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          email: email.value.trim(),
+          name: form.elements.name ? form.elements.name.value.trim() : '',
+          website: form.elements.website ? form.elements.website.value : '',
+          source: form.getAttribute('data-source') || '',
+          page: location.hash.slice(1) || 'home'
+        })
+      }).then(function(r){ return r.json().then(function(j){ return {ok: r.ok, body: j}; }); })
+        .then(function(res){
+          if (!res.ok || !res.body.ok) throw new Error(res.body && res.body.error || 'failed');
+          status.innerHTML = res.body.already
+            ? '<b>You were already on the list</b><span>We will keep you posted.</span>'
+            : '<b>You are on the list</b><span>Early word on shows, swaps and workshops is headed your way.</span>';
+          form.reset();
+          if (after) setTimeout(after, 2200);
+        })
+        .catch(function(err){
+          status.innerHTML = '<b>That did not go through</b><span>' + esc(err.message === 'invalid email' ? 'Check your email address and try again.' : 'Try again in a minute, or email suckafreecollective415@gmail.com.') + '</span>';
+        })
+        .then(function(){ busy = false; btn.disabled = false; });
+    });
+  }
+  signup('list-form', 'list-status');
 
   // ---------- the pill ----------
   var pill = document.getElementById('pill'), gone = false;
@@ -868,6 +910,7 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
   window.addEventListener('scroll', maybePill, {passive: true});
   function closePill(){ gone = true; pill.hidden = true; try { localStorage.setItem('sfc-pill', 'closed'); } catch(err){} }
   document.getElementById('pill-close').addEventListener('click', closePill);
+  signup('pill-form', 'pill-status', closePill);
   pill.querySelector('.pill-go').addEventListener('click', function(e){ e.preventDefault(); closePill(); var f = document.getElementById('list-email'); f.scrollIntoView({behavior: still ? 'auto' : 'smooth', block: 'center'}); setTimeout(function(){ f.focus({preventScroll: true}); }, 400); });
 
   show((location.hash || '').slice(1) || 'home');
