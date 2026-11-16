@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Sucka Free Top Bar</title>
+<title>Sucka Free Collective · An art gym in the Bayview</title>
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -442,11 +442,11 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
 @media (prefers-reduced-motion:reduce){.crop img,.swatch,.btn{transition:none}}
 
 /* ---------- whimsy: optional extras, each on its own switch ---------- */
-.wh-btn{position:fixed;left:clamp(12px,2vw,24px);bottom:clamp(12px,2vw,24px);z-index:55;width:52px;height:52px;border-radius:50%;border:2px solid var(--ink);background:var(--ink);color:var(--lime);cursor:pointer;display:grid;place-items:center;box-shadow:0 0 0 3px var(--cream)}
+.wh-btn{position:fixed;right:clamp(12px,2vw,24px);bottom:clamp(12px,2vw,24px);z-index:55;width:52px;height:52px;border-radius:50%;border:2px solid var(--ink);background:var(--ink);color:var(--lime);cursor:pointer;display:grid;place-items:center;box-shadow:0 0 0 3px var(--cream)}
 .wh-btn::before{content:"";width:26px;height:26px;background:currentColor;clip-path:polygon(50% 0,61% 39%,100% 50%,61% 61%,50% 100%,39% 61%,0 50%,39% 39%);transition:transform .3s}
 .wh-btn:hover::before,.wh-btn[aria-expanded="true"]::before{transform:rotate(45deg)}
 .wh-btn:focus-visible{outline:3px solid var(--magenta);outline-offset:3px}
-.wh-panel{position:fixed;left:clamp(12px,2vw,24px);bottom:calc(clamp(12px,2vw,24px) + 64px);z-index:55;width:min(300px,calc(100vw - 24px));background:var(--cream);border:2px solid var(--ink);padding:16px 16px 14px;display:grid;gap:10px}
+.wh-panel{position:fixed;right:clamp(12px,2vw,24px);bottom:calc(clamp(12px,2vw,24px) + 64px);z-index:55;width:min(300px,calc(100vw - 24px));background:var(--cream);border:2px solid var(--ink);padding:16px 16px 14px;display:grid;gap:10px}
 .wh-panel[hidden]{display:none}
 .wh-panel h2{font-size:1.9rem;line-height:.9}
 .wh-row{display:flex;align-items:center;justify-content:space-between;gap:12px;font-family:var(--narrow);font-stretch:72%;font-weight:700;text-transform:uppercase;font-size:1.15rem;line-height:1;cursor:pointer;background:none;border:0;padding:4px 0;color:var(--ink);text-align:left;width:100%}
@@ -459,6 +459,7 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
 .wh-all button{flex:1;font-family:var(--narrow);font-stretch:70%;font-weight:700;text-transform:uppercase;font-size:1rem;padding:8px 10px 7px;border:2px solid var(--ink);background:var(--cream);color:var(--ink);cursor:pointer}
 .wh-all button:hover{background:var(--ink);color:var(--cream)}
 .wh-note{font-size:.8rem;margin:0}
+.wh-rule{border:0;border-top:2px solid var(--ink);margin:4px 0 2px;width:100%}
 
 /* wiggle */
 @keyframes w-wobble{0%,100%{transform:rotate(0)}25%{transform:rotate(-2.5deg) translateY(-3px)}60%{transform:rotate(1.8deg) translateY(-1px)}85%{transform:rotate(-.6deg)}}
@@ -1484,7 +1485,10 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
 </script>
 
 <button class="wh-btn" id="wh-btn" type="button" aria-expanded="false" aria-controls="wh-panel" aria-label="Whimsy switches"></button>
-<div class="wh-panel" id="wh-panel" hidden role="group" aria-labelledby="wh-title">
+<div class="wh-panel" id="wh-panel" hidden role="group" aria-label="Switches">
+  <button type="button" class="wh-row wh-ver" role="switch" aria-checked="false" id="wh-ver">New brand look<span class="sw" aria-hidden="true"></span></button>
+  <p class="wh-note" id="wh-ver-note">Preview the site in our new voice and colors.</p>
+  <hr class="wh-rule">
   <h2 id="wh-title">Whimsy</h2>
   <button type="button" class="wh-row" role="switch" aria-checked="false" data-w="wiggle">Wiggle on hover<span class="sw" aria-hidden="true"></span></button>
   <button type="button" class="wh-row" role="switch" aria-checked="false" data-w="sparkles">Sparkle trail<span class="sw" aria-hidden="true"></span></button>
@@ -1555,7 +1559,7 @@ var WHIMSY = {
     else if (state.sparkles && e.pointerType === 'touch') for (var i = 0; i < 4; i++) sparkle(e.clientX + (Math.random() - .5) * 40, e.clientY + (Math.random() - .5) * 40);
   });
 
-  var rows = document.querySelectorAll('.wh-row');
+  var rows = document.querySelectorAll('.wh-row[data-w]');
   function apply(save){
     KEYS.forEach(function(k){ root.classList.toggle('w-' + k, state[k]); });
     rows.forEach(function(r){ r.setAttribute('aria-checked', state[r.dataset.w] ? 'true' : 'false'); });
@@ -1570,6 +1574,11 @@ var WHIMSY = {
   document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && !panel.hidden) { panel.hidden = true; btn.setAttribute('aria-expanded', 'false'); btn.focus(); } });
   document.addEventListener('click', function(e){ if (!panel.hidden && !e.target.closest('.wh-panel, .wh-btn')) { panel.hidden = true; btn.setAttribute('aria-expanded', 'false'); } });
   document.getElementById('wh-note').hidden = !still;
+  // the brand preview lives at /new/; this switch flips between the two, keeping your page
+  var onNew = /^\/new(\/|$)/.test(location.pathname), ver = document.getElementById('wh-ver');
+  ver.setAttribute('aria-checked', onNew ? 'true' : 'false');
+  document.getElementById('wh-ver-note').textContent = onNew ? 'You are previewing the new voice and colors. Flip back anytime.' : 'Preview the site in our new voice and colors.';
+  ver.addEventListener('click', function(){ location.href = (onNew ? '/' : '/new/') + location.hash; });
   apply(false);
 })();
 </script>
