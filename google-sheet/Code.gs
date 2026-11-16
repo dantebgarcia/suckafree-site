@@ -7,13 +7,15 @@
 //      Execute as: Me.  Who has access: Anyone.  Deploy, then allow access.
 //   4. Copy the "Web app" URL and save it in Cloudflare as SHEET_WEBHOOK_URL.
 //
-// Each new sign-up becomes a row on the "Website sign-ups" tab (created if missing).
+// Each new sign-up becomes a row on the "Website Sign-ups" tab (created if missing).
+// Columns follow the People tab: Status is "Interested" when they ticked membership, otherwise "Lead",
+// so a row can be copied into People when someone gets involved.
 // If you change this code later, use Deploy > Manage deployments > Edit > New version,
 // so the URL stays the same.
 
 const SECRET = 'PASTE-THE-SAME-SECRET-AS-SHEET_SECRET';
-const TAB = 'Website sign-ups';
-const HEADERS = ['Signed up', 'Email', 'Name', 'Signed up from', 'Page'];
+const TAB = 'Website Sign-ups';
+const HEADERS = ['Signed up', 'Name', 'Email', 'Status', 'Wants membership', 'Skills', 'Signed up from', 'Page'];
 
 function doPost(e) {
   let data;
@@ -36,8 +38,11 @@ function doPost(e) {
     }
     sheet.appendRow([
       data.created_at ? new Date(data.created_at) : new Date(),
-      safe(data.email),
       safe(data.name),
+      safe(data.email),
+      safe(data.status || 'Lead'),
+      data.member ? 'Yes' : '',
+      safe(data.skills),
       safe(data.source),
       safe(data.page),
     ]);

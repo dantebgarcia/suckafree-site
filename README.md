@@ -13,10 +13,10 @@ Cloudflare is connected to this repository: every push to `main` goes live in ab
 
 ## Email sign-ups
 
-The footer form and the lavender banner both post to `/api/signup`. Each sign-up is saved in a Cloudflare D1 database (`suckafree-signups`, created automatically on deploy). Duplicates are ignored, and a hidden field catches simple bots.
+The footer form (name, email, skills, membership interest) and the lavender banner (email only) both post to `/api/signup`. Each sign-up is saved in a Cloudflare D1 database (`suckafree-signups`, created automatically on deploy). Duplicates are ignored, and a hidden field catches simple bots.
 
 - **See the list:** `https://suckafree.org/admin`. Any username, with the `ADMIN_PASSWORD` password. You can download a CSV, remove someone, or resend rows that didn't reach the sheet.
-- **Google Sheet copy:** new sign-ups are added to a **Website sign-ups** tab in the collective's spreadsheet.
+- **Google Sheet copy:** new sign-ups are added to a **Website Sign-ups** tab in the collective's Warehouse Project spreadsheet, using the People tab's column names (Name, Email, Status, Skills). Status is *Interested* if they ticked membership, otherwise *Lead*.
 
 ### Secrets
 

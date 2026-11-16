@@ -19,6 +19,8 @@ const SCHEMA = `CREATE TABLE IF NOT EXISTS signups (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   email TEXT NOT NULL UNIQUE COLLATE NOCASE,
   name TEXT,
+  skills TEXT,
+  member TEXT,
   source TEXT,
   page TEXT,
   created_at TEXT NOT NULL,
@@ -28,10 +30,20 @@ const SCHEMA = `CREATE TABLE IF NOT EXISTS signups (
 const EMAIL_RE = /^[^\s@<>()[\]\\,;:"]+@[^\s@<>()[\]\\,;:"]+\.[^\s@<>()[\]\\,;:"]{2,}$/;
 const TZ = 'America/Los_Angeles';
 
+// Columns added after the first version; older databases get them on the fly.
+const LATER_COLUMNS = ['skills', 'member'];
+
 let schemaReady = null;
 function ensureSchema(env) {
   if (!schemaReady) {
-    schemaReady = env.DB.prepare(SCHEMA).run().catch((err) => {
+    schemaReady = (async () => {
+      await env.DB.prepare(SCHEMA).run();
+      const { results } = await env.DB.prepare('PRAGMA table_info(signups)').all();
+      const have = new Set(results.map((c) => c.name));
+      for (const col of LATER_COLUMNS) {
+        if (!have.has(col)) await env.DB.prepare(`ALTER TABLE signups ADD COLUMN ${col} TEXT`).run();
+      }
+    })().catch((err) => {
       schemaReady = null;
       throw err;
     });
@@ -86,6 +98,8 @@ async function handleSignup(request, env, ctx) {
   const row = {
     email,
     name: clean(data.name, 80),
+    skills: clean(data.skills, 300),
+    member: data.member === true || data.member === 'yes' || data.member === 'on' ? 'yes' : '',
     source: clean(data.source, 40),
     page: clean(data.page, 40),
     created_at: new Date().toISOString(),
@@ -93,10 +107,10 @@ async function handleSignup(request, env, ctx) {
 
   await ensureSchema(env);
   const result = await env.DB.prepare(
-    `INSERT INTO signups (email, name, source, page, created_at, sheet_status)
-     VALUES (?1, ?2, ?3, ?4, ?5, 'pending')
+    `INSERT INTO signups (email, name, skills, member, source, page, created_at, sheet_status)
+     VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, 'pending')
      ON CONFLICT(email) DO NOTHING`
-  ).bind(row.email, row.name, row.source, row.page, row.created_at).run();
+  ).bind(row.email, row.name, row.skills, row.member, row.source, row.page, row.created_at).run();
 
   const isNew = result.meta && result.meta.changes > 0;
   if (isNew) ctx.waitUntil(sendToSheet(env, row));
@@ -112,7 +126,7 @@ async function sendToSheet(env, row) {
       const res = await fetch(env.SHEET_WEBHOOK_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ secret: env.SHEET_SECRET, ...row }),
+        body: JSON.stringify({ secret: env.SHEET_SECRET, ...row, status: row.member ? 'Interested' : 'Lead' }),
         redirect: 'follow',
       });
       const text = await res.text();
@@ -152,7 +166,7 @@ async function handleAdmin(request, env, ctx, url, path) {
     }
     if (path === '/admin/resend') {
       const { results } = await env.DB.prepare(
-        "SELECT email, name, source, page, created_at FROM signups WHERE sheet_status IS NULL OR sheet_status != 'sent' ORDER BY id LIMIT 40"
+        "SELECT email, name, skills, member, source, page, created_at FROM signups WHERE sheet_status IS NULL OR sheet_status != 'sent' ORDER BY id LIMIT 40"
       ).all();
       let sent = 0;
       for (const row of results) if ((await sendToSheet(env, row)) === 'sent') sent++;
@@ -163,9 +177,9 @@ async function handleAdmin(request, env, ctx, url, path) {
 
   if (path === '/admin/signups.csv') {
     const { results } = await env.DB.prepare('SELECT * FROM signups ORDER BY id').all();
-    const header = ['signed_up', 'email', 'name', 'source', 'page', 'sheet_status'];
+    const header = ['signed_up', 'name', 'email', 'wants_membership', 'skills', 'source', 'page', 'sheet_status'];
     const lines = [header.join(',')].concat(results.map((r) =>
-      [r.created_at, r.email, r.name, r.source, r.page, r.sheet_status].map(csvCell).join(',')));
+      [r.created_at, r.name, r.email, r.member, r.skills, r.source, r.page, r.sheet_status].map(csvCell).join(',')));
     return new Response(lines.join('\r\n') + '\r\n', {
       headers: {
         'Content-Type': 'text/csv; charset=utf-8',
@@ -179,6 +193,7 @@ async function handleAdmin(request, env, ctx, url, path) {
 
   const { results } = await env.DB.prepare('SELECT * FROM signups ORDER BY id DESC LIMIT 1000').all();
   const total = (await env.DB.prepare('SELECT COUNT(*) AS n FROM signups').first()).n;
+  const members = (await env.DB.prepare("SELECT COUNT(*) AS n FROM signups WHERE member = 'yes'").first()).n;
   const waiting = results.filter((r) => r.sheet_status !== 'sent').length;
   const sheetReady = Boolean(env.SHEET_WEBHOOK_URL && env.SHEET_SECRET);
   const msg = url.searchParams.get('msg') || '';
@@ -189,6 +204,8 @@ async function handleAdmin(request, env, ctx, url, path) {
       <td>${esc(fmtDate(r.created_at))}</td>
       <td><a href="mailto:${esc(r.email)}">${esc(r.email)}</a></td>
       <td>${esc(r.name || '')}</td>
+      <td>${r.member ? 'Yes' : ''}</td>
+      <td>${esc(r.skills || '')}</td>
       <td>${esc(r.source || '')}${r.page ? ' · ' + esc(r.page) : ''}</td>
       <td class="${r.sheet_status === 'sent' ? 'ok' : 'warn'}">${esc(r.sheet_status || 'pending')}</td>
       <td><form method="post" action="/admin/delete" onsubmit="return confirm('Remove ${esc(r.email)}?')"><input type="hidden" name="id" value="${r.id}"><button class="x" type="submit">Remove</button></form></td>
@@ -196,7 +213,7 @@ async function handleAdmin(request, env, ctx, url, path) {
 
   return page('Email sign-ups', `
     <div class="bar">
-      <p class="big">${total} ${total === 1 ? 'person' : 'people'} on the list</p>
+      <p class="big">${total} ${total === 1 ? 'person' : 'people'} on the list · ${members} interested in membership</p>
       <div class="actions">
         <a class="btn" href="/admin/signups.csv">Download CSV</a>
         ${sheetReady && waiting ? `<form method="post" action="/admin/resend"><button class="btn" type="submit">Send ${waiting} missing to the sheet</button></form>` : ''}
@@ -205,7 +222,7 @@ async function handleAdmin(request, env, ctx, url, path) {
     ${note ? `<p class="note">${esc(note)}</p>` : ''}
     ${sheetReady ? '' : '<p class="note">The Google Sheet copy is not set up yet. Sign-ups are still saved here.</p>'}
     ${results.length ? `<div class="scroll"><table>
-      <thead><tr><th>Signed up</th><th>Email</th><th>Name</th><th>From</th><th>Sheet</th><th></th></tr></thead>
+      <thead><tr><th>Signed up</th><th>Email</th><th>Name</th><th>Member?</th><th>Skills</th><th>From</th><th>Sheet</th><th></th></tr></thead>
       <tbody>${rows}</tbody></table></div>` : '<p>No sign-ups yet.</p>'}
   `);
 }
