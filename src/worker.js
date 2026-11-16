@@ -152,8 +152,23 @@ async function handleSignup(request, env, ctx) {
   ).bind(row.email, row.name, row.skills, row.member, row.source, row.page, row.created_at).run();
 
   const isNew = result.meta && result.meta.changes > 0;
-  if (isNew) ctx.waitUntil(sendToSheet(env, row));
-  return json({ ok: true, already: !isNew });
+  if (isNew) { ctx.waitUntil(sendToSheet(env, row)); return json({ ok: true, already: false }); }
+
+  // Already on the list. If they signed up from a new interest list (co-working, say),
+  // add that to their record and send the sheet a row for it.
+  const prev = await env.DB.prepare('SELECT name, skills, source FROM signups WHERE email = ?1').bind(email).first();
+  const had = String((prev && prev.source) || '').split(',').map((x) => x.trim()).filter(Boolean);
+  if (row.source && !had.includes(row.source)) {
+    await env.DB.prepare(
+      `UPDATE signups SET source = ?2,
+         name = CASE WHEN name IS NULL OR name = '' THEN ?3 ELSE name END,
+         skills = CASE WHEN skills IS NULL OR skills = '' THEN ?4 ELSE skills END
+       WHERE email = ?1`
+    ).bind(email, had.concat(row.source).join(', ').slice(0, 200), row.name, row.skills).run();
+    ctx.waitUntil(sendToSheet(env, row));
+    return json({ ok: true, already: true, added: true });
+  }
+  return json({ ok: true, already: true });
 }
 
 // --------------------------------------------------------- founding members

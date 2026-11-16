@@ -382,6 +382,13 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
 .b-green .ticks li::before,.b-tomato .ticks li::before{background:currentColor}
 .soon{display:inline-block;vertical-align:middle;font-family:var(--narrow);font-stretch:72%;font-weight:700;text-transform:uppercase;font-size:.75rem;letter-spacing:.04em;line-height:1;padding:4px 7px 3px;background:var(--ink);color:var(--cream);margin-left:4px}
 .b-green .soon,.b-ink .soon{background:var(--cream);color:var(--ink)}
+.np-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:clamp(24px,4vw,56px);align-items:start}
+@media (max-width:860px){.np-grid{grid-template-columns:1fr}}
+.np-day{border-top-width:2px}
+.np-day li{grid-template-columns:62px 1fr;gap:4px 18px;align-items:baseline;padding:12px 0;border-bottom-width:2px}
+.np-day .tt-date{font-size:1.15rem}
+.np-day .tt-what strong{font-size:clamp(1.5rem,2.2vw,1.9rem);margin-bottom:3px}
+.np-day .tt-what{font-size:.95rem}
 .offers{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:clamp(12px,1.6vw,18px)}
 .offer{display:grid;gap:8px;align-content:start;background:var(--cream);padding:18px 20px 20px;text-decoration:none;border:2px solid var(--ink);transition:background .12s,color .12s}
 .offer b{font-family:var(--narrow);font-stretch:66%;font-weight:800;text-transform:uppercase;font-size:1.75rem;line-height:.95}
@@ -745,15 +752,84 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
         <a class="offer" href="#contact" data-topic="general"><b>Artist studios</b><span>Shared and private studios upstairs, month to month.</span><i>Ask about openings &rarr;</i></a>
         <a class="offer" href="#rent" data-rent="Music room share"><b>Music room shares</b><span>One guaranteed night a week for your band or project, $250 a month.</span><i>Ask about a spot &rarr;</i></a>
         <a class="offer" href="#rent" data-rent="Event or show"><b>Venue rental</b><span>Shows, parties, ceremonies and gatherings on the event floor.</span><i>Send an inquiry &rarr;</i></a>
+        <a class="offer" href="#rent" data-rent="Birthday or celebration"><b>Birthdays and celebrations</b><span>Birthday parties, send-offs and milestones, with the stage and sound if you want them.</span><i>Plan a party &rarr;</i></a>
+        <a class="offer" href="#rent" data-rent="Social or mixer"><b>Socials and mixers</b><span>Hangouts, mixers and community nights for your crew, your members or your neighbors.</span><i>Host a social &rarr;</i></a>
         <a class="offer" href="#rent" data-rent="Rehearsal"><b>Rehearsal and jam sessions</b><span>Space to practice, by the hour or the night.</span><i>Book rehearsal time &rarr;</i></a>
         <a class="offer" href="#events"><b>Workshops and trainings</b><span>Host one here, or come to ours: printing, sewing, crafts and more.</span><i>See what&rsquo;s on &rarr;</i></a>
-        <a class="offer" href="#rent" data-rent="Meeting or retreat"><b>Meetings and retreats</b><span>All-day meetings, retreats and planning days for your group.</span><i>Plan a meeting &rarr;</i></a>
-        <a class="offer" href="#rent" data-rent="Co-working"><b>Co-working</b><span>A place to work among artists, with free WiFi and a kitchen upstairs.</span><i>Ask about co-working &rarr;</i></a>
+        <a class="offer" href="#space" data-jump="nonprofits"><b>Retreats and trainings</b><span>Staff retreats, planning days, trainings and member meetings for nonprofits and organizers.</span><i>See how groups use it &rarr;</i></a>
+        <a class="offer" href="#space" data-jump="coworking"><b>Co-working <span class="soon">Exploring</span></b><span>A place to get work done among artists and organizers, with WiFi, a kitchen and big tables.</span><i>Tell us you&rsquo;re in &rarr;</i></a>
         <a class="offer" href="#rent" data-rent="Book the bus (Altared SF)"><b>Book the bus</b><span>Add <em>Altared SF</em> to your event as a gallery, altar or stage.</span><i>Book the bus &rarr;</i></a>
         <a class="offer" href="#list-email"><b>Open print days <span class="soon">Soon</span></b><span>Come print on our screen printing setup once the washout booth is in.</span><i>Get updates &rarr;</i></a>
         <a class="offer" href="#rent" data-rent="Artist residency"><b>Artist residency</b><span>Time and space to make a project here.</span><i>Tell us your idea &rarr;</i></a>
         <a class="offer" href="#rent"><b>Free community use</b><span>Free of charge to community groups at least twice a month, case by case.</span><i>Ask about free use &rarr;</i></a>
       </div>
+    </div>
+  </section>
+  <section class="field f-cream" id="nonprofits">
+    <div class="wrap stack">
+      <div class="head"><h2>For nonprofits and organizers</h2><span class="cap" style="font-size:1.3rem">Retreats, trainings, member meetings</span></div>
+      <p class="lede" style="max-width:64ch">Get your team out of the office and into a room that feels like the city you work for. The warehouse is run by San Francisco born and raised artists, and groups that organize, teach and care for this city are exactly who we built it for. Come for a day of planning, then make something together before you go.</p>
+      <div class="np-grid">
+        <div class="stack" style="gap:12px">
+          <h3 style="font-size:clamp(1.8rem,2.8vw,2.3rem)">What groups do here</h3>
+          <ul class="ticks">
+            <li>Staff and board retreats</li>
+            <li>All-day strategy and planning sessions</li>
+            <li>Member meetings and general assemblies</li>
+            <li>Trainings, workshops and political education</li>
+            <li>Volunteer nights, phone banks and canvass kickoffs</li>
+            <li>Art builds: banners, signs and props for actions</li>
+            <li>Fundraisers, from a small mixer to a full show</li>
+            <li>Wrap parties at the end of a campaign or a season</li>
+          </ul>
+          <div class="block b-mustard" style="padding:18px 20px;margin-top:6px"><h3 style="font-size:1.6rem">Working with a nonprofit budget?</h3><p>Tell us what you have to work with. Partner Orgs get 4+ hours of meeting time every month and the community rate on rentals, and we open the space free to community groups at least twice a month.</p></div>
+        </div>
+        <div class="stack" style="gap:12px">
+          <h3 style="font-size:clamp(1.8rem,2.8vw,2.3rem)">A retreat day at the warehouse</h3>
+          <ul class="timetable np-day">
+            <li><span class="tt-date">9:30</span><span class="tt-what"><strong>Arrive</strong>Coffee upstairs. Free parking out front, and the T line stops on 3rd St.</span></li>
+            <li><span class="tt-date">10:00</span><span class="tt-what"><strong>Open in circle</strong>On the couches in the lounge corner.</span></li>
+            <li><span class="tt-date">10:30</span><span class="tt-what"><strong>Get to work</strong>The full group on the main floor, with breakouts upstairs or on the bus.</span></li>
+            <li><span class="tt-date">12:30</span><span class="tt-what"><strong>Lunch</strong>Bring in food from a Bayview spot, with the kitchen upstairs to set up.</span></li>
+            <li><span class="tt-date">2:00</span><span class="tt-what"><strong>Make something</strong>An art activity led by our artists: print your group&rsquo;s shirts or totes, a sewing circle, or a group altar for the bus.</span></li>
+            <li><span class="tt-date">4:00</span><span class="tt-what"><strong>Wrap up</strong>Report back and close out with the doors open.</span></li>
+            <li><span class="tt-date">5:00</span><span class="tt-what"><strong>Stay for a social</strong>Optional: plug into the sound system and lights and celebrate.</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="stack" style="gap:10px">
+        <h3 style="font-size:clamp(1.6rem,2.4vw,2rem)">Add to your day</h3>
+        <ul class="tags"><li>Art activity led by our artists</li><li>Screen-printed shirts or totes</li><li>DJ, sound and lights</li><li>The bus as a breakout room, gallery or altar</li><li>Tables and chairs set up how you need them</li><li>A tour and the story of the collective</li></ul>
+      </div>
+      <div class="btn-row"><a class="btn btn--solid" href="#rent" data-rent="Retreat, meeting or staff day">Plan a retreat</a><a class="btn" href="#membership" data-tier="partner">Become a Partner Org</a></div>
+    </div>
+  </section>
+  <section class="field f-lav" id="coworking">
+    <div class="wrap split" style="align-items:start">
+      <div class="stack" style="gap:16px">
+        <span class="label" style="justify-self:start;background:var(--ink);color:var(--cream)">We&rsquo;re exploring it</span>
+        <h2 style="font-size:clamp(2.6rem,5vw,4rem)">Co-working at the warehouse</h2>
+        <p class="lede">We&rsquo;re thinking about opening the warehouse for regular co-working days: a place for artists, organizers and freelancers to get work done around people who make things. If that sounds like you, tell us, and help us shape it.</p>
+        <h3 style="font-size:1.8rem">What it could look like</h3>
+        <ul class="ticks">
+          <li>Weekday hours on the main floor and upstairs</li>
+          <li>Free WiFi, the kitchen, couches and big tables</li>
+          <li>Drop-in day passes, with co-working included for Day Tripper members</li>
+          <li>Room for a nonprofit team to work together for the day</li>
+          <li>Lunch with whoever is around, and the odd skillshare</li>
+        </ul>
+      </div>
+      <form class="form block b-cream" id="cowork-form" novalidate data-source="co-working" data-ok="You&rsquo;re on the co-working list|We will reach out when we pick days, and ask what would make it work for you." style="padding:clamp(20px,3vw,32px)">
+        <h3 style="font-size:1.8rem">Would you co-work here?</h3>
+        <div class="fields">
+          <div class="fld full"><label for="cw-name">Name</label><input type="text" id="cw-name" name="name" autocomplete="name" maxlength="80"></div>
+          <div class="fld full"><label for="cw-email">Email</label><input type="email" id="cw-email" name="email" autocomplete="email" required maxlength="254"></div>
+          <div class="fld full"><label for="cw-what">What kind of work do you do? <i>(optional)</i></label><input type="text" id="cw-what" name="skills" maxlength="300" placeholder="Design, organizing, writing, a nonprofit team…"></div>
+          <div class="hp" aria-hidden="true"><label for="cw-hp">Leave this empty</label><input type="text" id="cw-hp" name="website" tabindex="-1" autocomplete="off"></div>
+        </div>
+        <div class="btn-row"><button class="btn btn--solid" type="submit">Count me in</button></div>
+        <div class="status" id="cw-status" role="status" hidden></div>
+      </form>
     </div>
   </section>
   <section class="field f-sky">
@@ -997,7 +1073,7 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
           <div class="fld"><label for="rent-email">Email</label><input type="email" id="rent-email" name="email" autocomplete="email" required></div>
           <div class="fld full"><label for="rent-org">Organization or group <i>(optional)</i></label><input type="text" id="rent-org" name="org" autocomplete="organization"></div>
           <div class="fld"><label for="rent-type">What for</label>
-            <select id="rent-type" name="type" required><option value="">Choose one</option><option>Event or show</option><option>Workshop or training</option><option>Rehearsal</option><option>Music room share</option><option>Book the bus (Altared SF)</option><option>Meeting or retreat</option><option>Co-working</option><option>Artist residency</option><option>Something else</option></select></div>
+            <select id="rent-type" name="type" required><option value="">Choose one</option><option>Event or show</option><option>Birthday or celebration</option><option>Social or mixer</option><option>Retreat, meeting or staff day</option><option>Workshop or training</option><option>Rehearsal</option><option>Music room share</option><option>Book the bus (Altared SF)</option><option>Co-working</option><option>Artist residency</option><option>Something else</option></select></div>
           <div class="fld"><label for="rent-date">Date in mind <i>(optional)</i></label><input type="date" id="rent-date" name="date"></div>
           <div class="fld"><label for="rent-size">How many people <i>(optional)</i></label><input type="number" id="rent-size" name="size" min="1" inputmode="numeric"></div>
           <div class="fld"><label for="rent-hours">How many hours <i>(optional)</i></label><input type="number" id="rent-hours" name="hours" min="1" inputmode="numeric"></div>
@@ -1111,6 +1187,7 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
     if (tier && a.hasAttribute('data-amount')) { var am = document.getElementById('join-amount'); am.value = a.getAttribute('data-amount'); am.dispatchEvent(new Event('input')); if (!am.value) setTimeout(function(){ am.focus({preventScroll: true}); }, 400); }
     var topic = a.getAttribute('data-topic'); if (topic) { var sel = document.getElementById('contact-topic'); if (sel) sel.value = topic; }
     var rentType = a.getAttribute('data-rent'); if (rentType) { var rt = document.getElementById('rent-type'); if (rt) rt.value = rentType; }
+    var jump = a.getAttribute('data-jump'); if (jump) setTimeout(function(){ var el = document.getElementById(jump); if (el) el.scrollIntoView({behavior: still ? 'auto' : 'smooth', block: 'start'}); }, 30);
   });
 
   // ---------- instagram embeds ----------
@@ -1327,9 +1404,12 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
       }).then(function(r){ return r.json().then(function(j){ return {ok: r.ok, body: j}; }); })
         .then(function(res){
           if (!res.ok || !res.body.ok) throw new Error(res.body && res.body.error || 'failed');
-          status.innerHTML = res.body.already
-            ? '<b>You were already on the list</b><span>We will keep you posted.</span>'
-            : '<b>You are on the list</b><span>Early word on shows, swaps and workshops is headed your way.</span>';
+          var ok = (form.getAttribute('data-ok') || '').split('|');
+          status.innerHTML = ok[0] && (!res.body.already || res.body.added)
+            ? '<b>' + ok[0] + '</b><span>' + (ok[1] || '') + '</span>'
+            : res.body.already
+              ? '<b>You were already on the list</b><span>We will keep you posted.</span>'
+              : '<b>You are on the list</b><span>Early word on shows, swaps and workshops is headed your way.</span>';
           form.reset();
           if (after) setTimeout(after, 2200);
         })
@@ -1340,6 +1420,7 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
     });
   }
   signup('list-form', 'list-status');
+  signup('cowork-form', 'cw-status');
 
   // ---------- the pill ----------
   var pill = document.getElementById('pill'), gone = false;
