@@ -280,6 +280,43 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
 .quick button{font-family:var(--narrow);font-stretch:70%;font-weight:700;font-size:1.15rem;padding:8px 14px 7px;border:2px solid var(--ink);background:var(--cream);color:var(--ink);cursor:pointer}
 .quick button[aria-pressed="true"]{background:var(--ink);color:var(--cream)}
 
+/* home: goal, story, mix */
+.goal{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:clamp(24px,4vw,56px);align-items:center}
+@media (max-width:860px){.goal{grid-template-columns:1fr}}
+.goal-text{display:grid;gap:16px}
+.goal-text .label{justify-self:start;background:var(--mustard)}
+.goal-big{margin:0;font-family:var(--narrow);font-stretch:62%;font-weight:800;text-transform:uppercase;font-size:clamp(4rem,11vw,9rem);line-height:.82;color:var(--cream);font-variant-numeric:tabular-nums}
+.drive.drive--light{background:var(--cream);color:var(--ink)}
+.drive.drive--light .drive-num b{color:var(--ink)}
+.drive.drive--light .drive-bar{border-color:var(--ink);background:repeating-linear-gradient(90deg,#e9e3d3 0 calc(2% - 2px),#ddd5c1 calc(2% - 2px) 2%)}
+.drive.drive--light .fine{color:var(--ink);opacity:1;font-weight:600}
+.story{list-style:none;margin:0;padding:0;display:grid;gap:clamp(28px,5vw,64px)}
+.story li{display:grid;grid-template-columns:minmax(0,.7fr) minmax(0,1.3fr);gap:clamp(20px,4vw,56px);align-items:center}
+.story li:nth-child(2){grid-template-columns:minmax(0,1.3fr) minmax(0,.7fr)}
+.story li:nth-child(2) .crop{order:2}
+.story .crop{aspect-ratio:1;max-width:360px;width:100%;justify-self:center}
+.story-text{display:grid;gap:12px;max-width:60ch}
+.story-n{font-family:var(--narrow);font-stretch:62%;font-weight:800;font-size:1.3rem;width:44px;height:44px;display:grid;place-items:center;background:var(--ink);color:var(--cream)}
+.story h3{font-size:clamp(2.2rem,4.4vw,3.6rem);line-height:.92}
+.story p{font-size:clamp(1.05rem,1.6vw,1.2rem);line-height:1.55}
+@media (max-width:760px){.story li,.story li:nth-child(2){grid-template-columns:1fr}.story li:nth-child(2) .crop{order:0}.story .crop{max-width:240px;justify-self:start}}
+.pat-gold{background:repeating-linear-gradient(45deg,var(--mustard) 0 10px,var(--ink) 10px 14px)}
+.mix{background:var(--cream);padding:clamp(18px,3vw,30px);display:grid;gap:16px}
+.mix-bar{display:flex;height:44px;border:2px solid var(--ink)}
+.mix-bar i{display:block;border-right:2px solid var(--ink)}
+.mix-bar i:last-child{border-right:0}
+.mix-rows{display:grid;border-top:2px solid var(--ink)}
+.mix-row{display:grid;grid-template-columns:40px minmax(0,1fr) auto auto auto;gap:6px 16px;align-items:center;padding:12px 0;border-bottom:2px solid var(--ink);text-decoration:none}
+.mix-row .sw{width:40px;height:40px;border:2px solid var(--ink)}
+.mix-row b{font-family:var(--narrow);font-stretch:66%;font-weight:800;text-transform:uppercase;font-size:clamp(1.5rem,2.6vw,2rem);line-height:1}
+.mix-at{font-size:.9688rem}
+.mix-sum{font-family:var(--narrow);font-stretch:66%;font-weight:800;font-size:1.6rem;font-variant-numeric:tabular-nums;min-width:4.5ch;text-align:right}
+.mix-row i{font-style:normal;font-family:var(--narrow);font-stretch:72%;font-weight:700;text-transform:uppercase;font-size:1rem}
+.mix-row:hover{background:var(--ink);color:var(--cream)}
+.mix-total{margin:0;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:12px;font-family:var(--narrow);font-stretch:70%;font-weight:700;text-transform:uppercase;font-size:1.3rem}
+.mix-total b{font-stretch:62%;font-weight:800;font-size:clamp(2.4rem,5vw,3.6rem);font-variant-numeric:tabular-nums}
+@media (max-width:600px){.mix-total b{font-size:2.2rem}.mix-row{grid-template-columns:32px minmax(0,1fr) auto}.mix-row .sw{width:32px;height:32px}.mix-at{grid-column:2;grid-row:2}.mix-row i{display:none}}
+
 /* instagram embeds */
 .igs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,326px),1fr));gap:clamp(16px,2.4vw,28px);align-items:start}
 .ig{margin:0;display:grid;gap:10px;min-width:0}
@@ -421,28 +458,70 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
     <div class="hero-labels">
       <span class="label hero-tag">An art gym in the Bayview</span>
       <div class="hero-name">
-        <a class="label" href="#events">Muni Raised Me 2</a>
-        <span class="label label--ink">Opens April 15, 2027 · 415 Day</span>
+        <a class="label" href="#membership">Keep the warehouse open</a>
+        <a class="label label--ink" href="#membership">Founding members drive · $3,000 a month by 415 Day</a>
       </div>
     </div>
   </div>
   <div class="bars" aria-hidden="true"></div>
+
+  <section class="field f-ink">
+    <div class="wrap goal">
+      <div class="goal-text">
+        <span class="label">Our shared goal</span>
+        <p class="goal-big">$3,000 a month</p>
+        <p class="lede">from founding members by 415 Day, April 15, 2027. That is what it takes to keep this warehouse open for artists, for good.</p>
+        <div class="btn-row"><a class="btn btn--solid" href="#membership" data-tier="rider">Become a founding member</a><a class="btn" href="#membership" data-tier="supporter">Pay it forward</a></div>
+      </div>
+      <div class="drive drive--light" aria-live="polite">
+        <p class="drive-num"><b class="founding-money">&mdash;</b><span> of $3,000 a month pledged</span></p>
+        <div class="drive-bar" aria-hidden="true"><i class="founding-fill"></i></div>
+        <p class="fine"><span class="founding-count">&mdash;</span> founding members so far</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="field f-cream">
+    <div class="wrap stack">
+      <div class="head"><h2>Why we need you</h2></div>
+      <ol class="story">
+        <li>
+          <div class="crop oval"><img src="img/circle.webp" alt="A full room gathered in a circle on the warehouse floor" loading="lazy"></div>
+          <div class="story-text"><span class="story-n">1</span><h3>San Francisco keeps losing its art spaces</h3>
+          <p>This year alone, beloved venues like Thee Parkside and Bottom of the Hill announced they would close, pointing to high rents (<a href="https://missionlocal.org/2026/04/sf-bayview-warehouse-sucka-free-collective/" target="_blank" rel="noopener">Mission Local</a>). Most of us were born and raised here, and we have watched the studios, venues and gathering places that raised us disappear one by one.</p></div>
+        </li>
+        <li>
+          <div class="crop blob"><img src="img/garage.webp" alt="Collective members in the warehouse garage door with the Sucka Free banner" loading="lazy" style="object-position:50% 70%"></div>
+          <div class="story-text"><span class="story-n">2</span><h3>So we built one</h3>
+          <p>When Meymey&rsquo;s dad handed over the lease on his old electrical warehouse in the Bayview, we got to work. We built a stage out of scrap wood, borrowed a sound system, and gave the Muni Raised Me bus a home. Since opening in January: about 150 people at A-1&rsquo;s birthday show, 80 at Pop Out to the Polls, workshops full with a waitlist, and studios rented to working artists.</p></div>
+        </li>
+        <li>
+          <div class="crop arch"><img src="img/workshop.webp" alt="People making art together at a long workshop table" loading="lazy"></div>
+          <div class="story-text"><span class="story-n">3</span><h3>Now we need it to last</h3>
+          <p>Right now, big parties and private rentals pay most of the bills. That works for now, but it means the space goes to whoever can pay the most, not the artists and neighbors it is for. $3,000 a month from members covers the basics of keeping the building running. Then we can keep studios affordable, keep the space free for community groups, and keep it run by city kids, for city kids.</p></div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="field f-sky">
+    <div class="wrap stack">
+      <div class="head"><h2>It takes all kinds</h2><a class="btn btn--sm" href="#membership">See all the levels</a></div>
+      <p class="lede" style="max-width:58ch">No one has to carry this alone. Here is one way we get to $3,000 a month, with people giving what fits their life and how they use the space.</p>
+      <div class="mix">
+        <div class="mix-bar" aria-hidden="true"><i class="pat-stripe" style="flex:600" title="Riders"></i><i class="pat-dots" style="flex:900" title="Day Trippers"></i><i class="pat-check" style="flex:570" title="Night Owls"></i><i class="pat-wave" style="flex:300" title="Partner Orgs"></i><i class="pat-gold" style="flex:650" title="Founding Supporters"></i></div>
+        <div class="mix-rows"><a class="mix-row" href="#membership" data-tier="rider"><span class="sw pat-stripe"></span><b>40 Riders</b><span class="mix-at">at $15</span><span class="mix-sum">$600</span><i>Join &rarr;</i></a><a class="mix-row" href="#membership" data-tier="daytripper"><span class="sw pat-dots"></span><b>20 Day Trippers</b><span class="mix-at">at $45</span><span class="mix-sum">$900</span><i>Join &rarr;</i></a><a class="mix-row" href="#membership" data-tier="nightowl"><span class="sw pat-check"></span><b>6 Night Owls</b><span class="mix-at">at $95</span><span class="mix-sum">$570</span><i>Join &rarr;</i></a><a class="mix-row" href="#membership" data-tier="partner"><span class="sw pat-wave"></span><b>2 Partner Orgs</b><span class="mix-at">at $150</span><span class="mix-sum">$300</span><i>Join &rarr;</i></a><a class="mix-row" href="#membership" data-tier="supporter"><span class="sw pat-gold"></span><b>5 Founding Supporters</b><span class="mix-at">at $100+</span><span class="mix-sum">$650</span><i>Join &rarr;</i></a></div>
+        <p class="mix-total"><span>73 founding members</span><b>$3,020 a month</b></p>
+      </div>
+      <p class="fine" style="max-width:62ch">Can&rsquo;t swing $15? <a href="#membership" data-tier="pwyc">Pay what you can from $5</a>. Every founding member counts, and Founding Supporters&rsquo; gifts help keep those spots open.</p>
+    </div>
+  </section>
 
   <section class="field f-mustard">
     <div class="wrap board">
       <a class="board-a" href="#mission"><div class="crop blob"><img src="img/bus.webp" alt="Altared SF, the retired Muni bus turned mobile gallery, dressed up for a parade" loading="lazy" style="object-position:50% 40%"></div><span class="label">The bus</span></a>
       <a class="board-b" href="#space"><div class="crop oval"><img src="img/workshop.webp" alt="People making art together at a workshop table" loading="lazy"></div><span class="label">The warehouse</span></a>
       <a class="board-c" href="#rent"><div class="crop"><img src="img/dance.webp" alt="The warehouse event floor set up for a night of dancing" loading="lazy"></div><span class="label">Event floor, full sound system</span></a>
-    </div>
-  </section>
-
-  <section class="field f-lav">
-    <div class="wrap stack">
-      <p class="statement">SF born &amp; raised artists building an art gym for the city that raised us.</p>
-      <div class="split" style="align-items:start">
-        <p class="lede">We are turning a former electrical warehouse in the Bayview into a place you come back to on a regular basis to practice creativity, build relationships and add to community life. Affordable workspace, shared tools, cultural programming and skill sharing for working artists and neighbors.</p>
-        <div class="btn-row"><a class="btn btn--solid" href="#membership">Become a member</a><a class="btn" href="#mission">Read our mission</a></div>
-      </div>
     </div>
   </section>
 
@@ -457,7 +536,6 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
       </ul>
     </div>
   </section>
-
   <section class="field f-green" style="color:var(--cream)">
     <div class="wrap stack">
       <div class="head"><h2>In the news</h2></div>
@@ -488,33 +566,8 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
       </div>
     </div>
   </section>
-
-  <div class="bars" aria-hidden="true"></div>
-
-  <section class="field f-sky">
-    <div class="wrap stack">
-      <div class="head"><h2>Founding members</h2><a class="btn btn--sm" href="#membership">See the levels</a></div>
-      <div class="home-drive">
-        <div class="stack" style="gap:18px">
-          <p class="lede" style="max-width:48ch">We are looking for 50 people to chip in every month and keep the warehouse open for everyone. Join by 415 Day, April 15, 2027, to get your name on the founders wall and lock in your rate.</p>
-          <div class="tiers tiers-3">
-            <a class="tier" href="#membership" data-tier="rider"><div class="swatch pat-stripe" style="aspect-ratio:4/3"><span class="label">Rider</span></div><div class="tier-meta"><span>Keep the doors open</span><span>$15</span></div></a>
-            <a class="tier" href="#membership" data-tier="daytripper"><div class="swatch pat-dots" style="aspect-ratio:4/3"><span class="label">Day Tripper</span></div><div class="tier-meta"><span>Make work here</span><span>$45</span></div></a>
-            <a class="tier" href="#membership" data-tier="nightowl"><div class="swatch pat-check" style="aspect-ratio:4/3"><span class="label">Night Owl</span></div><div class="tier-meta"><span>Keys, storage</span><span>$95</span></div></a>
-          </div>
-        </div>
-        <div class="drive">
-          <p class="drive-num"><b class="founding-count">&mdash;</b><span> of 50 founding members</span></p>
-          <div class="drive-bar" aria-hidden="true"><i class="founding-fill"></i></div>
-          <a class="btn btn--sm" href="#membership" data-tier="rider" style="justify-self:start;border-color:var(--cream);color:var(--cream)">Become a founding member</a>
-          <p class="fine" style="color:var(--cream);opacity:.85;margin:0">Can give more? <a href="#membership" data-tier="supporter">Pay it forward as a Founding Supporter</a>, from $100 a month.</p>
-        </div>
-      </div>
-    </div>
-  </section>
 </section>
 
-<!-- ======================= MISSION ======================= -->
 <section data-view="mission" hidden>
   <div class="page-head" style="--f:var(--sky)"><div class="wrap"><div><h1>Mission</h1><p class="sub"><span class="label">Why we hop on the back of the bus</span></p></div><div class="crop oval"><img src="img/sutro.webp" alt="Sutro Tower against a sunset sky" loading="lazy"></div></div></div>
   <div class="bars" aria-hidden="true"></div>
@@ -743,18 +796,18 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
   <div class="bars" aria-hidden="true"></div>
   <section class="field f-cream">
     <div class="wrap stack">
-      <p class="statement" style="max-width:18ch">Be one of our first 50 founding members.</p>
+      <p class="statement" style="max-width:18ch">Help us reach $3,000 a month by 415 Day.</p>
       <div class="split" style="align-items:start">
         <div class="prose">
-          <p class="lede">This is our first year in the warehouse, and we are raising what it takes to keep the doors open. Fifty people chipping in every month gives the space a steady base, so event rentals and grants can go to artists and programs instead of the bills.</p>
+          <p class="lede">This is our first year in the warehouse, and we are raising what it takes to keep the doors open. $3,000 a month from members gives the space a steady base, so event rentals and grants can go to artists and programs instead of the bills.</p>
           <p>Join by 415 Day, April 15, 2027, when Muni Raised Me 2 opens, and you are a founding member: your name goes on the founders wall and your rate is locked in for as long as you stay.</p>
           <p>Able to give more than you would ever use? <a href="#membership" data-tier="supporter">Become a Founding Supporter</a> and pay it forward.</p>
           <div class="btn-row"><a class="btn btn--solid" href="#membership" data-tier="rider">Become a founding member</a><a class="btn" href="#support">Rather give once?</a></div>
         </div>
         <div class="drive" aria-live="polite">
-          <p class="drive-num"><b class="founding-count">&mdash;</b><span> of 50 founding members</span></p>
+          <p class="drive-num"><b class="founding-money">&mdash;</b><span> of $3,000 a month pledged</span></p>
           <div class="drive-bar" aria-hidden="true"><i class="founding-fill"></i></div>
-          <p class="fine">Goal: 50 monthly members by April 15, 2027.</p>
+          <p class="fine"><span class="founding-count">&mdash;</span> founding members so far. Goal: $3,000 a month by April 15, 2027.</p>
         </div>
       </div>
     </div>
@@ -768,7 +821,7 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
         <article class="pass"><div class="swatch pat-check"><span class="label">Night Owl</span></div><div class="pass-body"><p class="pass-price">$95 <small>a month</small></p><p class="pass-tag">Keys, late nights, storage</p><ul class="ticks"><li>Your own key and 24/7 access</li><li>A storage shelf</li><li>First pick on scheduling</li><li><span class="incl">Everything a Day Tripper gets</span></li><li>Limited spots. We meet in person before handing over keys.</li></ul><a class="btn btn--sm" href="#membership" data-tier="nightowl">Join as a Night Owl</a></div></article>
       </div>
       <div class="split" style="align-items:stretch">
-        <div class="block b-cream"><h3>Pay what you can</h3><p>Money tight right now? Join as a Rider for any amount from $5 a month. Every founding member counts toward the 50, and gets the same benefits.</p><a class="btn btn--sm" href="#membership" data-tier="pwyc">Pick my amount</a></div>
+        <div class="block b-cream"><h3>Pay what you can</h3><p>Money tight right now? Join as a Rider for any amount from $5 a month. Every founding member counts, and gets the same benefits.</p><a class="btn btn--sm" href="#membership" data-tier="pwyc">Pick my amount</a></div>
         <div class="block b-mustard"><h3>Bringing a group?</h3><p>Partner Org, $150 a month: 4+ hours of room use for meetings each month, the community rate on venue rentals, and your group listed as a community partner.</p><a class="btn btn--sm" href="#membership" data-tier="partner">Join as a Partner Org</a></div>
       </div>
     </div>
@@ -809,7 +862,7 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
           <a href="#membership" data-tier="supporter" data-amount="500">$500<small>a month</small></a>
           <a href="#membership" data-tier="supporter" data-amount="">Your amount<small>from $100</small></a>
         </div>
-        <p class="fine" style="color:var(--cream);opacity:.85">Founding Supporters count toward our 50 founding members. Want your gift to go through our fiscal sponsor, SOMArts? Say so in the form and we will follow up.</p>
+        <p class="fine" style="color:var(--cream);opacity:.85">Founding Supporters count toward our $3,000 a month goal. Want your gift to go through our fiscal sponsor, SOMArts? Say so in the form and we will follow up.</p>
       </div>
     </div>
   </section>
@@ -1079,14 +1132,18 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
   // Paste each level's payment link here once it exists (Stripe Payment Link, SOMArts page, etc.).
   // Empty means: save the sign-up and send the link by email.
   var PAY_LINKS = { rider: '', daytripper: '', nightowl: '', partner: '', supporter: '', pwyc: '' };
-  var GOAL = 50;
-  function paintDrive(n){
-    document.querySelectorAll('.founding-count').forEach(function(el){ el.textContent = n; });
-    document.querySelectorAll('.founding-fill').forEach(function(el){ el.style.setProperty('--pct', Math.min(100, n / GOAL * 100) + '%'); });
+  var GOAL = 3000;
+  function paintDrive(j){
+    if (typeof j.monthly === 'number') {
+      GOAL = j.goal_monthly || GOAL;
+      document.querySelectorAll('.founding-money').forEach(function(el){ el.textContent = '$' + j.monthly.toLocaleString('en-US'); });
+      document.querySelectorAll('.founding-fill').forEach(function(el){ el.style.setProperty('--pct', Math.min(100, j.monthly / GOAL * 100) + '%'); });
+    }
+    if (typeof j.count === 'number') document.querySelectorAll('.founding-count').forEach(function(el){ el.textContent = j.count; });
   }
   function loadDrive(){
     fetch('/api/founding', {cache: 'no-store'}).then(function(r){ return r.ok ? r.json() : null; })
-      .then(function(j){ if (j && typeof j.count === 'number') { GOAL = j.goal || GOAL; paintDrive(j.count); } })
+      .then(function(j){ if (j && j.ok) paintDrive(j); })
       .catch(function(){});
   }
   loadDrive();
@@ -1147,7 +1204,7 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
           status.innerHTML = '<b>' + (r.value === 'supporter' ? 'Thank you, Founding Supporter!' : 'Welcome, founding member!') + '</b><span>You picked ' + esc(r.dataset.name.replace(', pay what you can', '')) + ' at $' + monthly + ' a month. ' +
             (link ? 'One last step: set up your monthly payment.</span><a class="btn btn--sm" style="justify-self:start;border-color:var(--cream);color:var(--cream)" href="' + esc(link) + '" target="_blank" rel="noopener">Set up my payment</a>'
                   : 'We will email you a secure link to set up your monthly payment within a few days.</span>');
-          if (typeof res.body.count === 'number') paintDrive(res.body.count);
+          paintDrive(res.body);
           form.reset(); pickTier('rider');
         })
         .catch(function(err){

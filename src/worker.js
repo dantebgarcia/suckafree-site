@@ -17,8 +17,9 @@
 //   SHEET_WEBHOOK_URL  the Apps Script web app URL
 //   SHEET_SECRET       shared secret, same value as SECRET in Code.gs
 // Optional variables:
-//   FOUNDING_GOAL      defaults to 50
-//   FOUNDING_OFFSET    founding members who joined offline, added to the count
+//   FOUNDING_GOAL_MONTHLY   dollars a month, defaults to 3000
+//   FOUNDING_OFFSET         founding members who joined offline, added to the count
+//   FOUNDING_OFFSET_MONTHLY their monthly dollars, added to the total
 
 const SCHEMA = `CREATE TABLE IF NOT EXISTS signups (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -94,7 +95,7 @@ export default {
       }
       if (path === '/api/founding') {
         await ensureSchema(env);
-        return json({ ok: true, count: await foundingCount(env), goal: foundingGoal(env) }, 200, { 'Cache-Control': 'public, max-age=30' });
+        return json(await foundingStats(env), 200, { 'Cache-Control': 'public, max-age=30' });
       }
       if (path === '/admin' || path.startsWith('/admin/')) {
         return await handleAdmin(request, env, ctx, url, path);
@@ -154,7 +155,14 @@ async function handleSignup(request, env, ctx) {
 
 // --------------------------------------------------------- founding members
 
-function foundingGoal(env) { return Number(env.FOUNDING_GOAL) > 0 ? Number(env.FOUNDING_GOAL) : 50; }
+function foundingGoal(env) { return Number(env.FOUNDING_GOAL_MONTHLY) > 0 ? Number(env.FOUNDING_GOAL_MONTHLY) : 3000; }
+
+async function foundingStats(env) {
+  const r = await env.DB.prepare("SELECT COUNT(*) AS n, COALESCE(SUM(amount), 0) AS total FROM members WHERE status != 'cancelled'").first();
+  const extraN = Number(env.FOUNDING_OFFSET) > 0 ? Math.floor(Number(env.FOUNDING_OFFSET)) : 0;
+  const extra$ = Number(env.FOUNDING_OFFSET_MONTHLY) > 0 ? Math.floor(Number(env.FOUNDING_OFFSET_MONTHLY)) : 0;
+  return { ok: true, count: r.n + extraN, monthly: r.total + extra$, goal_monthly: foundingGoal(env) };
+}
 
 async function foundingCount(env) {
   const r = await env.DB.prepare("SELECT COUNT(*) AS n FROM members WHERE status != 'cancelled'").first();
@@ -216,7 +224,7 @@ async function handleJoin(request, env, ctx) {
     if (listed.meta && listed.meta.changes > 0) await sendToSheet(env, listRow);
   })());
 
-  return json({ ok: true, updated: Boolean(existing), count: await foundingCount(env), goal: foundingGoal(env) });
+  return json({ ...(await foundingStats(env)), updated: Boolean(existing) });
 }
 
 async function postToSheet(env, payload) {
@@ -336,7 +344,7 @@ async function handleAdmin(request, env, ctx, url, path) {
   const pledged = live.reduce((t, m) => t + (m.amount || 0), 0);
   const paying = live.filter((m) => m.status === 'paying');
   const payingSum = paying.reduce((t, m) => t + (m.amount || 0), 0);
-  const fCount = await foundingCount(env), fGoal = foundingGoal(env);
+  const stats = await foundingStats(env);
   const memWaiting = mem.filter((m) => m.sheet_status !== 'sent').length;
   const msg = url.searchParams.get('msg') || '';
   const note = msg === 'updated' ? 'Updated.' : msg === 'deleted' ? 'Removed.'
@@ -371,7 +379,7 @@ async function handleAdmin(request, env, ctx, url, path) {
   return page('Members and sign-ups', `
     <h2 id="members">Founding members</h2>
     <div class="bar">
-      <p class="big">${fCount} of ${fGoal} · $${pledged.toLocaleString('en-US')}/month signed up · ${paying.length} paying ($${payingSum.toLocaleString('en-US')}/month)</p>
+      <p class="big">$${stats.monthly.toLocaleString('en-US')} of $${stats.goal_monthly.toLocaleString('en-US')}/month signed up · ${stats.count} members · ${paying.length} paying ($${payingSum.toLocaleString('en-US')}/month)</p>
       <div class="actions"><a class="btn" href="/admin/members.csv">Download members CSV</a></div>
     </div>
     <p class="hint">Set someone to <b>paying</b> once their monthly payment is set up. <b>Cancelled</b> takes them off the count on the site.</p>
