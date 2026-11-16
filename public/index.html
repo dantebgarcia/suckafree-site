@@ -19,12 +19,13 @@
   --ink:#0b0b0b;
   --rail:#0a8541;      /* the green of the banner's hills */
   --mustard:#ffbf1f;
-  --lav:#c497ff;
+  --lav:#b49bff;
   --sky:#5bbcff;
   --pink:#ff8fd3;
   --tomato:#ff4527;
   --magenta:#ff2fb9;
   --lime:#c8ff4d;      /* the starbursts on our flyers */
+  --violet:#6a2fd4;    /* close to Valkyries Violet: the Bay's purple */
   --body:"Archivo","Helvetica Neue",Arial,sans-serif;
   --narrow:"Archivo","Arial Narrow","Helvetica Neue Condensed",Arial,sans-serif;
   --barh:84px;
@@ -263,11 +264,12 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
 
 /* founding supporters */
 .f-ink{--f:var(--ink);color:var(--cream)}
-.f-ink .ticks li::before{background:var(--lime)}
-.f-ink .btn{border-color:var(--cream);color:var(--cream)}
-.f-ink .btn:hover{background:var(--cream);color:var(--ink)}
-.f-ink .btn--solid{background:var(--lime);border-color:var(--lime);color:var(--ink)}
-.f-ink .btn--solid:hover{background:var(--cream);border-color:var(--cream)}
+.f-violet{--f:var(--violet);color:var(--cream)}
+.f-violet .ticks li::before,.f-ink .ticks li::before{background:var(--lime)}
+.f-violet .btn,.f-ink .btn{border-color:var(--cream);color:var(--cream)}
+.f-violet .btn:hover,.f-ink .btn:hover{background:var(--cream);color:var(--ink)}
+.f-violet .btn--solid,.f-ink .btn--solid{background:var(--lime);border-color:var(--lime);color:var(--ink)}
+.f-violet .btn--solid:hover,.f-ink .btn--solid:hover{background:var(--cream);border-color:var(--cream)}
 .patron-head{display:grid;gap:14px;max-width:62ch}
 .patron-head .label{justify-self:start;background:var(--lime)}
 .patron-head h2{font-size:clamp(3rem,8vw,6.5rem);color:var(--cream)}
@@ -496,7 +498,7 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
     </div>
   </section>
 
-  <section class="field f-ink">
+  <section class="field f-violet">
     <div class="wrap goal">
       <div class="goal-text">
         <span class="label">Our shared goal</span>
@@ -856,7 +858,7 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
       </div>
     </div>
   </section>
-  <section class="field f-ink" id="supporters">
+  <section class="field f-violet" id="supporters">
     <div class="wrap stack">
       <div class="patron-head">
         <span class="label">Pay it forward</span>
