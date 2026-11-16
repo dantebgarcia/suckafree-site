@@ -481,14 +481,6 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
 @keyframes w-spark{0%{transform:translate(-50%,-50%) scale(0) rotate(0)}30%{transform:translate(-50%,-50%) scale(1.1) rotate(40deg);opacity:1}100%{transform:translate(-50%,calc(-50% + 18px)) scale(.2) rotate(120deg);opacity:0}}
 @keyframes w-pop{0%{transform:translate(-50%,-50%) scale(.3);opacity:1}70%{opacity:1}100%{transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(1) rotate(var(--r));opacity:0}}
 
-/* stars */
-.w-stars .field,.w-stars .page-head{position:relative;overflow:hidden}
-.w-stars .field > :not(.w-star),.w-stars .page-head > :not(.w-star){position:relative;z-index:1}
-.w-star{position:absolute;pointer-events:none;z-index:0;width:var(--s);height:var(--s);background:var(--c);clip-path:polygon(50% 0,61% 39%,100% 50%,61% 61%,50% 100%,39% 61%,0 50%,39% 39%);animation:w-twinkle var(--d,3s) ease-in-out var(--dl,0s) infinite}
-.w-star.burst{clip-path:polygon(50% 0,58% 24%,79% 9%,74% 34%,100% 33%,80% 50%,100% 67%,74% 66%,79% 91%,58% 76%,50% 100%,42% 76%,21% 91%,26% 66%,0 67%,20% 50%,0 33%,26% 34%,21% 9%,42% 24%);animation-name:w-turn;animation-timing-function:linear}
-@keyframes w-twinkle{0%,100%{transform:scale(1) rotate(0)}50%{transform:scale(.6) rotate(25deg);opacity:.75}}
-@keyframes w-turn{to{transform:rotate(360deg)}}
-@media (prefers-reduced-motion:reduce){.w-star{animation:none}}
 </style>
 </head>
 <body>
@@ -1496,7 +1488,6 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
   <h2 id="wh-title">Whimsy</h2>
   <button type="button" class="wh-row" role="switch" aria-checked="false" data-w="wiggle">Wiggle on hover<span class="sw" aria-hidden="true"></span></button>
   <button type="button" class="wh-row" role="switch" aria-checked="false" data-w="sparkles">Sparkle trail<span class="sw" aria-hidden="true"></span></button>
-  <button type="button" class="wh-row" role="switch" aria-checked="false" data-w="stars">Stars<span class="sw" aria-hidden="true"></span></button>
   <button type="button" class="wh-row" role="switch" aria-checked="false" data-w="confetti">Confetti pops<span class="sw" aria-hidden="true"></span></button>
   <div class="wh-all"><button type="button" data-all="on">All on</button><button type="button" data-all="off">All off</button></div>
   <p class="wh-note" id="wh-note" hidden>Your device asks for less motion, so things stay still.</p>
@@ -1507,13 +1498,13 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
 //   panel:    show the star button that opens the switches (false hides it)
 //   defaults: what's on before a visitor touches a switch
 // Visitors' own choices are remembered on their device. You can also share a link
-// with ?whimsy=all, ?whimsy=off or ?whimsy=stars,sparkles in it.
+// with ?whimsy=all, ?whimsy=off or ?whimsy=wiggle,sparkles in it.
 var WHIMSY = {
   panel: true,
-  defaults: { wiggle: false, sparkles: false, stars: false, confetti: false }
+  defaults: { wiggle: false, sparkles: false, confetti: false }
 };
 (function(){
-  var KEYS = ['wiggle', 'sparkles', 'stars', 'confetti'];
+  var KEYS = ['wiggle', 'sparkles', 'confetti'];
   var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var COLORS = ['var(--lime)', 'var(--magenta)', 'var(--mustard)', 'var(--sky)', 'var(--tomato)', 'var(--lav)', 'var(--ink)', 'var(--pink)'];
   var root = document.documentElement, state = {};
@@ -1522,34 +1513,8 @@ var WHIMSY = {
   var q = new URLSearchParams(location.search).get('whimsy');
   if (q) { var want = q.toLowerCase().split(','); KEYS.forEach(function(k){ state[k] = want.indexOf('all') > -1 || want.indexOf(k) > -1; }); }
 
-  // a little seeded randomness so the stars stay put
-  function rng(seed){ return function(){ seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }; }
-  function pick(r, list){ return list[Math.floor(r() * list.length)]; }
-
   document.querySelectorAll('.tiles').forEach(function(t){ Array.prototype.forEach.call(t.children, function(sp, i){ sp.style.setProperty('--i', i); }); });
 
-  function addStars(){
-    document.querySelectorAll('main .field, main .page-head').forEach(function(sec, n){
-      if (sec.querySelector(':scope > .w-star')) return;
-      var r = rng(n * 131 + 7), pad = parseFloat(getComputedStyle(sec).paddingTop) || 48;
-      var own = (sec.className.match(/f-(\w+)/) || [])[1];
-      var colors = COLORS.filter(function(c){ return own !== c.slice(6, -1) && !(own === 'lav' && c.indexOf('lav') > -1); });
-      var count = 3 + Math.floor(r() * 3);
-      for (var i = 0; i < count; i++) {
-        var st = document.createElement('span'), size = 14 + Math.floor(r() * 26), burst = r() < .3;
-        st.className = 'w-star' + (burst ? ' burst' : ''); st.setAttribute('aria-hidden', 'true');
-        st.style.setProperty('--s', (burst ? size + 12 : size) + 'px');
-        st.style.setProperty('--c', pick(r, colors));
-        st.style.setProperty('--d', (burst ? 14 + r() * 10 : 2.4 + r() * 2.6).toFixed(1) + 's');
-        st.style.setProperty('--dl', (-r() * 4).toFixed(1) + 's');
-        var band = Math.max(8, pad - size - 14);
-        st.style.left = (3 + r() * 92).toFixed(1) + '%';
-        if (i % 2) st.style.top = (6 + r() * band).toFixed(0) + 'px'; else st.style.bottom = (6 + r() * band).toFixed(0) + 'px';
-        sec.appendChild(st);
-      }
-    });
-  }
-  function removeStars(){ document.querySelectorAll('.w-star').forEach(function(s){ s.remove(); }); }
 
   var lastX = -99, lastY = -99, lastT = 0, live = 0;
   function sparkle(x, y, size){
@@ -1593,7 +1558,6 @@ var WHIMSY = {
   var rows = document.querySelectorAll('.wh-row');
   function apply(save){
     KEYS.forEach(function(k){ root.classList.toggle('w-' + k, state[k]); });
-    if (state.stars) addStars(); else removeStars();
     rows.forEach(function(r){ r.setAttribute('aria-checked', state[r.dataset.w] ? 'true' : 'false'); });
     if (save) try { localStorage.setItem('sfc-whimsy', JSON.stringify(state)); } catch(e){}
   }
