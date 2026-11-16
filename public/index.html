@@ -317,6 +317,21 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
 .mix-total b{font-stretch:62%;font-weight:800;font-size:clamp(2.4rem,5vw,3.6rem);font-variant-numeric:tabular-nums}
 @media (max-width:600px){.mix-total b{font-size:2.2rem}.mix-row{grid-template-columns:32px minmax(0,1fr) auto}.mix-row .sw{width:32px;height:32px}.mix-at{grid-column:2;grid-row:2}.mix-row i{display:none}}
 
+/* welcome video + so far */
+.welcome{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(24px,4vw,56px);align-items:center}
+@media (max-width:900px){.welcome{grid-template-columns:1fr}}
+.welcome-text{display:grid;gap:18px}
+.video{position:relative;aspect-ratio:16/9;background:var(--ink);overflow:hidden}
+.video img,.video iframe,.video video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border:0}
+.video img{opacity:.75}
+.video-label{position:absolute;left:14px;bottom:14px;display:grid;gap:6px;justify-items:start}
+.video-label .label{--ls:clamp(1.3rem,2.4vw,2rem)}
+.so-far b{color:var(--ink)}
+.so-far span a{text-decoration-color:var(--ink)}
+.so-far-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:0 28px}
+.so-far-list li{font-family:var(--narrow);font-stretch:72%;font-weight:700;text-transform:uppercase;font-size:clamp(1.25rem,2vw,1.55rem);line-height:1.1;padding:10px 0;border-bottom:2px solid var(--ink)}
+.building .block h3{font-size:clamp(1.7rem,2.4vw,2.1rem)}
+
 /* instagram embeds */
 .igs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,326px),1fr));gap:clamp(16px,2.4vw,28px);align-items:start}
 .ig{margin:0;display:grid;gap:10px;min-width:0}
@@ -458,19 +473,32 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
     <div class="hero-labels">
       <span class="label hero-tag">An art gym in the Bayview</span>
       <div class="hero-name">
-        <a class="label" href="#membership">Keep the warehouse open</a>
+        <a class="label" href="#membership">Help us get this off the ground</a>
         <a class="label label--ink" href="#membership">Founding members drive · $3,000 a month by 415 Day</a>
       </div>
     </div>
   </div>
   <div class="bars" aria-hidden="true"></div>
 
+  <section class="field f-cream">
+    <div class="wrap welcome">
+      <div class="welcome-text">
+        <p class="statement" style="font-size:clamp(2.6rem,6vw,5rem)">Art spaces across San Francisco are closing. We&rsquo;re opening one.</p>
+        <p class="lede">SF born &amp; raised artists turning a family electrical warehouse in the Bayview into an art gym: studios, a print shop, a music room, a stage, and a retired Muni bus. Come take a look around.</p>
+      </div>
+      <div class="video" id="welcome-video" data-src="">
+        <img src="img/garage.webp" alt="" loading="lazy" style="object-position:50% 70%">
+        <div class="video-label"><span class="label">Welcome to the warehouse</span><span class="label label--ink">Video coming soon</span></div>
+      </div>
+    </div>
+  </section>
+
   <section class="field f-ink">
     <div class="wrap goal">
       <div class="goal-text">
         <span class="label">Our shared goal</span>
         <p class="goal-big">$3,000 a month</p>
-        <p class="lede">from founding members by 415 Day, April 15, 2027. That is what it takes to keep this warehouse open for artists, for good.</p>
+        <p class="lede">from founding members by 415 Day, April 15, 2027. That is what it takes to get this warehouse off the ground: studios artists can afford, a print shop and music room open to all, a stage of our own, and free space for the community.</p>
         <div class="btn-row"><a class="btn btn--solid" href="#membership" data-tier="rider">Become a founding member</a><a class="btn" href="#membership" data-tier="supporter">Pay it forward</a></div>
       </div>
       <div class="drive drive--light" aria-live="polite">
@@ -483,31 +511,45 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
 
   <section class="field f-cream">
     <div class="wrap stack">
-      <div class="head"><h2>Why we need you</h2></div>
-      <ol class="story">
-        <li>
-          <div class="crop oval"><img src="img/circle.webp" alt="A full room gathered in a circle on the warehouse floor" loading="lazy"></div>
-          <div class="story-text"><span class="story-n">1</span><h3>San Francisco keeps losing its art spaces</h3>
-          <p>This year alone, beloved venues like Thee Parkside and Bottom of the Hill announced they would close, pointing to high rents (<a href="https://missionlocal.org/2026/04/sf-bayview-warehouse-sucka-free-collective/" target="_blank" rel="noopener">Mission Local</a>). Most of us were born and raised here, and we have watched the studios, venues and gathering places that raised us disappear one by one.</p></div>
-        </li>
-        <li>
-          <div class="crop blob"><img src="img/garage.webp" alt="Collective members in the warehouse garage door with the Sucka Free banner" loading="lazy" style="object-position:50% 70%"></div>
-          <div class="story-text"><span class="story-n">2</span><h3>So we built one</h3>
-          <p>When Meymey&rsquo;s dad handed over the lease on his old electrical warehouse in the Bayview, we got to work. We built a stage out of scrap wood, borrowed a sound system, and gave the Muni Raised Me bus a home. Since opening in January: about 150 people at A-1&rsquo;s birthday show, 80 at Pop Out to the Polls, workshops full with a waitlist, and studios rented to working artists.</p></div>
-        </li>
-        <li>
-          <div class="crop arch"><img src="img/workshop.webp" alt="People making art together at a long workshop table" loading="lazy"></div>
-          <div class="story-text"><span class="story-n">3</span><h3>Now we need it to last</h3>
-          <p>Right now, big parties and private rentals pay most of the bills. That works for now, but it means the space goes to whoever can pay the most, not the artists and neighbors it is for. $3,000 a month from members covers the basics of keeping the building running. Then we can keep studios affordable, keep the space free for community groups, and keep it run by city kids, for city kids.</p></div>
-        </li>
-      </ol>
+      <div class="head"><h2>What we&rsquo;ve done so far</h2><a class="btn btn--sm" href="#events">See past events</a></div>
+      <p class="lede" style="max-width:62ch">We opened the doors in January with a stage built from scrap wood, a borrowed sound system and a retired Muni bus. Here is what this first year has looked like.</p>
+      <div class="facts so-far">
+        <div><b>20</b><span>Bay Area rooted artists call the warehouse their creative home</span></div>
+        <div><b>150</b><span>people packed in for A-1&rsquo;s birthday show, our first on the new stage</span></div>
+        <div><b>80</b><span>neighbors came through Pop Out to the Polls, and <a href="https://insight.tveyes.com/public/share/1e7b2ab4-31c2-4cf3-a199-1316eef602b4/421b8e11-09de-4c4a-819b-f6af5bfb8eaf" target="_blank" rel="noopener">Channel 7 came too</a></span></div>
+        <div><b>2nd</b><span>place at Carnaval, riding with Bateria Batuki on the Muni Raised Me bus</span></div>
+      </div>
+      <ul class="so-far-list">
+        <li>Studios rented to working artists, month to month</li>
+        <li>Workshops that fill up with a waitlist</li>
+        <li>Clothing swaps, sewing circles and block printing</li>
+        <li>A masked, sober day rave with every air purifier running</li>
+        <li>An all-ages rock show at Unity Fest</li>
+        <li>Featured in <a href="https://missionlocal.org/2026/04/sf-bayview-warehouse-sucka-free-collective/" target="_blank" rel="noopener">Mission Local</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="field f-lav">
+    <div class="wrap stack">
+      <div class="head"><h2>What we&rsquo;re building</h2><span class="cap" style="font-size:1.3rem">With your help</span></div>
+      <div class="blocks building">
+        <div class="block b-cream"><h3>A print shop for everyone</h3><p>Our screen printing studio is almost ready. Next come open print days, so anyone can come in and pull a print.</p></div>
+        <div class="block b-pink"><h3>A music room and recording studio</h3><p>Rehearsal nights for bands now, and a recording studio next, so local artists can make their music here.</p></div>
+        <div class="block b-sky"><h3>A stage with our own sound</h3><p>A permanent sound system, so shows don&rsquo;t depend on borrowed gear that goes back the next morning.</p></div>
+        <div class="block b-mustard"><h3>Walls full of murals</h3><p>Bay Area muralists cover the warehouse for Muni Raised Me 2, opening on 415 Day as part of the Further Triennial.</p></div>
+        <div class="block b-green"><h3>A shared gear library</h3><p>Tools and instruments everyone can borrow, tracked on Community Gearbox, with training so members can use them on their own.</p></div>
+        <div class="block b-tomato"><h3>An arts resilience hub</h3><p>Readiness trainings, shared supplies, and the bus ready to carry mutual aid when the neighborhood needs it.</p></div>
+        <div class="block b-ink"><h3>Free space for community</h3><p>Room for community groups at no cost, at least twice a month, and more as membership grows.</p></div>
+      </div>
+      <div class="btn-row"><a class="btn btn--solid" href="#membership" data-tier="rider">Help build it</a><a class="btn" href="#membership" data-tier="supporter">Pay it forward</a></div>
     </div>
   </section>
 
   <section class="field f-sky">
     <div class="wrap stack">
       <div class="head"><h2>It takes all kinds</h2><a class="btn btn--sm" href="#membership">See all the levels</a></div>
-      <p class="lede" style="max-width:58ch">No one has to carry this alone. Here is one way we get to $3,000 a month, with people giving what fits their life and how they use the space.</p>
+      <p class="lede" style="max-width:58ch">No one has to carry this alone. Here is one way we get to $3,000 a month together, with people giving what fits their life and how they use the space.</p>
       <div class="mix">
         <div class="mix-bar" aria-hidden="true"><i class="pat-stripe" style="flex:600" title="Riders"></i><i class="pat-dots" style="flex:900" title="Day Trippers"></i><i class="pat-check" style="flex:570" title="Night Owls"></i><i class="pat-wave" style="flex:300" title="Partner Orgs"></i><i class="pat-gold" style="flex:650" title="Founding Supporters"></i></div>
         <div class="mix-rows"><a class="mix-row" href="#membership" data-tier="rider"><span class="sw pat-stripe"></span><b>40 Riders</b><span class="mix-at">at $15</span><span class="mix-sum">$600</span><i>Join &rarr;</i></a><a class="mix-row" href="#membership" data-tier="daytripper"><span class="sw pat-dots"></span><b>20 Day Trippers</b><span class="mix-at">at $45</span><span class="mix-sum">$900</span><i>Join &rarr;</i></a><a class="mix-row" href="#membership" data-tier="nightowl"><span class="sw pat-check"></span><b>6 Night Owls</b><span class="mix-at">at $95</span><span class="mix-sum">$570</span><i>Join &rarr;</i></a><a class="mix-row" href="#membership" data-tier="partner"><span class="sw pat-wave"></span><b>2 Partner Orgs</b><span class="mix-at">at $150</span><span class="mix-sum">$300</span><i>Join &rarr;</i></a><a class="mix-row" href="#membership" data-tier="supporter"><span class="sw pat-gold"></span><b>5 Founding Supporters</b><span class="mix-at">at $100+</span><span class="mix-sum">$650</span><i>Join &rarr;</i></a></div>
@@ -705,7 +747,7 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
   <section class="field f-sky">
     <div class="wrap stack">
       <div class="head"><h2>Member benefits</h2><a class="btn btn--sm" href="#membership">Join the founding drive</a></div>
-      <p class="lede" style="max-width:60ch">Members keep the warehouse open for everyone, and get more of it in return. What you get depends on your level.</p>
+      <p class="lede" style="max-width:60ch">Members help get the warehouse off the ground, and get more of it in return. What you get depends on your level.</p>
       <ul class="tags benefits">
         <li>Name on the founders wall</li><li>Founding rate locked in</li><li>Snail mail art</li><li>15% off events and workshops</li><li>Early invites and members-only events</li><li>A vote on programming</li>
         <li>Open studio hours and co-working</li><li>Shared tools and equipment</li><li>Guest passes</li><li>24/7 access with keys</li><li>A storage shelf</li><li>First pick on scheduling</li>
@@ -799,7 +841,7 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
       <p class="statement" style="max-width:18ch">Help us reach $3,000 a month by 415 Day.</p>
       <div class="split" style="align-items:start">
         <div class="prose">
-          <p class="lede">This is our first year in the warehouse, and we are raising what it takes to keep the doors open. $3,000 a month from members gives the space a steady base, so event rentals and grants can go to artists and programs instead of the bills.</p>
+          <p class="lede">This is our first year in the warehouse, and we are raising what it takes to get it off the ground. $3,000 a month from members gives the space a steady base, so we can finish the print shop and music room, get a sound system of our own, and keep studios affordable for working artists.</p>
           <p>Join by 415 Day, April 15, 2027, when Muni Raised Me 2 opens, and you are a founding member: your name goes on the founders wall and your rate is locked in for as long as you stay.</p>
           <p>Able to give more than you would ever use? <a href="#membership" data-tier="supporter">Become a Founding Supporter</a> and pay it forward.</p>
           <div class="btn-row"><a class="btn btn--solid" href="#membership" data-tier="rider">Become a founding member</a><a class="btn" href="#support">Rather give once?</a></div>
@@ -816,7 +858,7 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
     <div class="wrap stack">
       <div class="head"><h2>Choose your level</h2><span class="cap" style="font-size:1.3rem">Monthly · cancel anytime</span></div>
       <div class="levels">
-        <article class="pass"><div class="swatch pat-stripe"><span class="label">Rider</span></div><div class="pass-body"><p class="pass-price">$15 <small>a month</small></p><p class="pass-tag">Keep the doors open</p><ul class="ticks"><li>All the founding member benefits below</li><li>Can&rsquo;t swing $15? Choose any amount from $5</li></ul><a class="btn btn--sm" href="#membership" data-tier="rider">Join as a Rider</a></div></article>
+        <article class="pass"><div class="swatch pat-stripe"><span class="label">Rider</span></div><div class="pass-body"><p class="pass-price">$15 <small>a month</small></p><p class="pass-tag">Help get it off the ground</p><ul class="ticks"><li>All the founding member benefits below</li><li>Can&rsquo;t swing $15? Choose any amount from $5</li></ul><a class="btn btn--sm" href="#membership" data-tier="rider">Join as a Rider</a></div></article>
         <article class="pass"><div class="swatch pat-dots"><span class="label">Day Tripper</span></div><div class="pass-body"><p class="pass-price">$45 <small>a month</small></p><p class="pass-tag">Make work here</p><ul class="ticks"><li>Open studio hours and co-working, after a passport session that shows you the space and tools</li><li>Shared tools and equipment</li><li>A guest pass every month</li><li><span class="incl">Everything a Rider gets</span></li></ul><a class="btn btn--sm" href="#membership" data-tier="daytripper">Join as a Day Tripper</a></div></article>
         <article class="pass"><div class="swatch pat-check"><span class="label">Night Owl</span></div><div class="pass-body"><p class="pass-price">$95 <small>a month</small></p><p class="pass-tag">Keys, late nights, storage</p><ul class="ticks"><li>Your own key and 24/7 access</li><li>A storage shelf</li><li>First pick on scheduling</li><li><span class="incl">Everything a Day Tripper gets</span></li><li>Limited spots. We meet in person before handing over keys.</li></ul><a class="btn btn--sm" href="#membership" data-tier="nightowl">Join as a Night Owl</a></div></article>
       </div>
@@ -831,7 +873,7 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
       <div class="patron-head">
         <span class="label">Pay it forward</span>
         <h2>Founding Supporters</h2>
-        <p class="lede">Some of us can give more than we would ever use. Founding Supporters give $100 or more a month, with no keys, studio hours or storage attached. You are not buying access. You are getting this warehouse off the ground, and paying it forward so that others can be artists here.</p>
+        <p class="lede">Some of us can give more. Founding Supporters give $100 or more a month to get this warehouse off the ground, and pay it forward so that others can be artists here.</p>
       </div>
       <div class="patron-grid">
         <div>
@@ -841,7 +883,7 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
             <li>Studios working artists can afford, in a city that keeps pricing them out</li>
             <li>Free use of the space for community groups, at least twice a month</li>
             <li>Workshops where teaching artists get paid and tickets stay cheap</li>
-            <li>Getting the doors open: the washout booth, a sound system of our own, the lights and the bills</li>
+            <li>Building it out: a sound system of our own, the recording studio and a shared gear library</li>
           </ul>
         </div>
         <div>
@@ -870,8 +912,8 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
     <div class="wrap split" style="align-items:start">
       <div class="block b-pink" style="padding:clamp(22px,3vw,32px)"><h3 style="font-size:clamp(2rem,3.4vw,2.8rem)">Every founding member gets</h3><ul class="ticks"><li>Your name on the founders wall at the warehouse</li><li>Your founding rate, locked in for as long as you stay a member</li><li>An invite to the founders party on 415 Day, when Muni Raised Me 2 opens</li><li>Snail mail art from the crew every season: prints, zines, stickers</li><li>15% off events and workshops</li><li>Early invites and members-only events</li><li>A vote in each season&rsquo;s programming survey</li></ul></div>
       <div class="prose">
-        <h2 style="font-size:clamp(2.4rem,4.6vw,3.6rem)">Where your dues go</h2>
-        <ul class="list"><li>Keeping the lights on and the doors open</li><li>A washout booth so the print studio can open to everyone</li><li>A sound system of our own</li><li>Paying artists who lead workshops</li><li>Free use of the space for community groups</li></ul>
+        <h2 style="font-size:clamp(2.4rem,4.6vw,3.6rem)">What your dues build</h2>
+        <ul class="list"><li>A print shop with open print days for everyone</li><li>A music room and recording studio</li><li>A sound system of our own</li><li>Paying artists who lead workshops</li><li>Free use of the space for community groups</li></ul>
       </div>
     </div>
   </section>
@@ -916,10 +958,10 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
   <div class="bars" aria-hidden="true"></div>
   <section class="field f-cream">
     <div class="wrap stack">
-      <p class="statement" style="max-width:20ch">Artist spaces in SF close when rent wins. Ours stays open because people chip in.</p>
+      <p class="statement" style="max-width:20ch">Art spaces across SF are closing. We&rsquo;re opening one, together.</p>
       <p class="lede">Sucka Free Collective is fiscally sponsored by <a href="https://somarts.org/" target="_blank" rel="noopener">SOMArts</a>.</p>
       <div class="blocks">
-        <div class="block b-pink"><h3>Become a member</h3><p>The steadiest support there is. Monthly dues start at $5 and keep the warehouse open for everyone.</p><a class="btn btn--sm" href="#membership">See the passes</a></div>
+        <div class="block b-pink"><h3>Become a member</h3><p>The steadiest support there is. Monthly dues start at $5 and help get the warehouse off the ground.</p><a class="btn btn--sm" href="#membership">See the passes</a></div>
         <div class="block b-mustard"><h3>Give directly</h3><p>Make a one time or recurring donation toward rent, artist stipends and materials.</p><a class="btn btn--sm" href="#contact" data-topic="donate">Ask how to give</a></div>
         <div class="block b-sky"><h3>Give in kind</h3><p>We are building a gear library. Screen printing supplies, sewing machines and notions, tools, music gear and art materials all get used.</p><a class="btn btn--sm" href="#contact" data-topic="inkind">Offer materials</a></div>
         <div class="block b-lav"><h3>Volunteer</h3><p>Teach a skill, help run an event, welcome newcomers at the door, or join a work day at the warehouse.</p><a class="btn btn--sm" href="#contact" data-topic="volunteer">Sign up to help</a></div>
@@ -1099,6 +1141,24 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
     sc.onload = function(){ if (window.instgrm && window.instgrm.Embeds) window.instgrm.Embeds.process(); };
     document.body.appendChild(sc);
   }
+
+  // ---------- welcome video ----------
+  (function(){
+    var box = document.getElementById('welcome-video'); if (!box) return;
+    var src = box.getAttribute('data-src'); if (!src) return;
+    var yt = src.match(/(?:youtu\.be\/|v=|shorts\/)([\w-]{11})/), vm = src.match(/vimeo\.com\/(\d+)/);
+    if (yt || vm) {
+      var f = document.createElement('iframe');
+      f.src = yt ? 'https://www.youtube-nocookie.com/embed/' + yt[1] + '?rel=0' : 'https://player.vimeo.com/video/' + vm[1];
+      f.title = 'Welcome to the warehouse'; f.allow = 'autoplay; fullscreen; picture-in-picture'; f.allowFullscreen = true; f.loading = 'lazy';
+      box.innerHTML = ''; box.appendChild(f);
+    } else {
+      var v = document.createElement('video');
+      v.src = src; v.controls = true; v.preload = 'metadata'; v.playsInline = true;
+      var poster = box.querySelector('img'); if (poster) v.poster = poster.src;
+      box.innerHTML = ''; box.appendChild(v);
+    }
+  })();
 
   // ---------- menu ----------
   var menu = document.getElementById('menu'), openBtn = document.getElementById('menu-open');

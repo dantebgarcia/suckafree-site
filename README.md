@@ -46,6 +46,10 @@ The home and Membership pages run a founding members drive toward $3,000 a month
 - On `/admin`, set each member's status to **paying** once their payment is set up, or **cancelled** to take them off the count.
 - Payment links: paste each level's link into `PAY_LINKS` near the bottom of `public/index.html`. With a link set, members get a "Set up my payment" button right after signing up; without one, the page says you will email them a link.
 
+## Welcome video
+
+The home page has a "Welcome to the warehouse" spot (`#welcome-video` in `public/index.html`). Put a YouTube or Vimeo link in its `data-src` attribute and it plays there. A short `.mp4` saved in `public/` also works (e.g. `data-src="welcome.mp4"`), but Cloudflare caps each file at 25 MiB, so anything longer belongs on YouTube or Vimeo.
+
 ## Not connected yet
 
 The rental and contact forms still show a preview message instead of sending. Membership dues need payment links (see above).
