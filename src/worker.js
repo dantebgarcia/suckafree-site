@@ -48,7 +48,8 @@ const TIERS = {
   daytripper: { name: 'Day Tripper', amount: 45 },
   nightowl: { name: 'Night Owl', amount: 95 },
   partner: { name: 'Partner Org', amount: 150 },
-  pwyc: { name: 'Rider (pay what you can)', amount: null },
+  supporter: { name: 'Founding Supporter', amount: null, min: 100 },
+  pwyc: { name: 'Rider (pay what you can)', amount: null, min: 5 },
 };
 const STATUSES = ['signed up', 'paying', 'cancelled'];
 
@@ -174,7 +175,7 @@ async function handleJoin(request, env, ctx) {
   let amount = tier.amount;
   if (amount == null) {
     amount = Math.round(Number(data.amount));
-    if (!(amount >= 5 && amount <= 1000)) return json({ ok: false, error: 'invalid amount' }, 400);
+    if (!(amount >= tier.min && amount <= 10000)) return json({ ok: false, error: 'invalid amount' }, 400);
   }
   const first = clean(data.first, 80), last = clean(data.last, 80);
   if (!first || !last) return json({ ok: false, error: 'missing name' }, 400);
