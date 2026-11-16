@@ -243,6 +243,15 @@ label i{font-family:var(--body);font-stretch:100%;font-style:normal;font-weight:
 input[type=text],input[type=email],input[type=tel],input[type=date],input[type=number],select,textarea{width:100%;font:inherit;font-size:1rem;color:var(--ink);background:var(--cream);border:2px solid var(--ink);border-radius:0;padding:10px 12px;min-height:48px}
 textarea{min-height:110px;resize:vertical}
 fieldset{border:0;margin:0;padding:0;display:grid;gap:10px;min-width:0}
+.join-tabs{display:grid;grid-template-columns:1fr 1fr;border:2px solid var(--ink)}
+.join-tabs button{font-family:var(--narrow);font-stretch:66%;font-weight:800;text-transform:uppercase;font-size:clamp(1.3rem,3.2vw,2rem);line-height:1;padding:16px 14px 13px;border:0;background:var(--cream);color:var(--ink);cursor:pointer;text-align:center}
+.join-tabs button+button{border-left:2px solid var(--ink)}
+.join-tabs button[aria-selected="true"]{background:var(--ink);color:var(--cream)}
+.join-tabs button:hover:not([aria-selected="true"]){background:var(--mustard)}
+.join-tabs button:focus-visible{outline:3px solid var(--magenta);outline-offset:3px}
+.join-panel{display:grid;gap:16px}
+.join-panel[hidden]{display:none}
+.join-intro{margin:0;max-width:60ch;font-size:1.05rem}
 .tier-pick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 @media (max-width:560px){.tier-pick{grid-template-columns:1fr}}
 .tier-opt{position:relative;display:grid;grid-template-columns:auto 1fr;gap:0 12px;align-items:center;border:2px solid var(--ink);padding:10px 12px;background:var(--cream);cursor:pointer;font-family:var(--body);font-stretch:100%;font-size:1rem;font-weight:400;text-transform:none;letter-spacing:0}
@@ -889,28 +898,33 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
     <div class="wrap stack">
       <div class="head"><h2>Join us</h2><span class="cap" style="font-size:1.3rem">Takes two minutes</span></div>
       <form class="form" id="join-form" novalidate>
-        <fieldset>
-          <legend>Founding Community Supporter</legend>
-          <div class="tier-pick">
-            <label class="tier-opt" style="grid-column:1/-1"><input type="radio" name="tier" id="tier-supporter" value="supporter" data-name="Founding Community Supporter" data-amount="" checked><span class="sw pat-gold"></span><b>Founding Community Supporter</b><small>Any amount from $5 a month</small></label>
-          </div>
+        <div class="join-tabs" role="tablist" aria-label="How you want to join">
+          <button type="button" role="tab" id="jt-supporter" data-tab="supporter" aria-controls="jp-supporter" aria-selected="true">Founding supporter</button>
+          <button type="button" role="tab" id="jt-artist" data-tab="artist" aria-controls="jp-artist" aria-selected="false" tabindex="-1">Artist membership</button>
+        </div>
+        <div class="join-panel" role="tabpanel" id="jp-supporter" aria-labelledby="jt-supporter">
+          <p class="join-intro">Give monthly to help get the warehouse off the ground. Any amount from $5 counts toward the $3,000, and every supporter gets the founding perks.</p>
+          <input type="radio" name="tier" id="tier-supporter" value="supporter" data-name="Founding Community Supporter" data-amount="" checked hidden>
+          <div class="fld" id="join-amount-field"><label for="join-amount">Your monthly gift, in dollars <i id="join-amount-hint">(from $5)</i></label><input type="number" id="join-amount" name="amount" min="5" max="10000" step="1" inputmode="numeric" placeholder="25" style="max-width:200px"><div class="quick" id="join-quick"><button type="button" data-v="10">$10</button><button type="button" data-v="25">$25</button><button type="button" data-v="50">$50</button><button type="button" data-v="100">$100</button><button type="button" data-v="250">$250</button></div></div>
+        </div>
+        <div class="join-panel" role="tabpanel" id="jp-artist" aria-labelledby="jt-artist" hidden>
+          <p class="join-intro">Make work here. Pick a level. Every membership starts with a passport session that shows you around the space and the tools.</p>
+          <fieldset>
+            <legend>Choose your level</legend>
+            <div class="tier-pick">
+              <label class="tier-opt"><input type="radio" name="tier" id="tier-daytripper" value="daytripper" data-name="Day Tripper" data-amount="45"><span class="sw pat-dots" style="background-size:20px 20px;background-image:radial-gradient(circle,var(--ink) 0 4px,transparent 5px)"></span><b>Day Tripper</b><small>$45 a month</small></label>
+              <label class="tier-opt"><input type="radio" name="tier" id="tier-nightowl" value="nightowl" data-name="Night Owl" data-amount="95"><span class="sw pat-check" style="background-size:20px 20px"></span><b>Night Owl</b><small>$95 a month</small></label>
+              <label class="tier-opt"><input type="radio" name="tier" id="tier-partner" value="partner" data-name="Partner Org" data-amount="150"><span class="sw pat-wave" style="background-size:30px 15px"></span><b>Partner Org</b><small>$150 a month</small></label>
+            </div>
         </fieldset>
-        <div class="fld" id="join-amount-field"><label for="join-amount">Your monthly gift, in dollars <i id="join-amount-hint">(from $5)</i></label><input type="number" id="join-amount" name="amount" min="5" max="10000" step="1" inputmode="numeric" placeholder="25" style="max-width:200px"><div class="quick" id="join-quick"><button type="button" data-v="10">$10</button><button type="button" data-v="25">$25</button><button type="button" data-v="50">$50</button><button type="button" data-v="100">$100</button><button type="button" data-v="250">$250</button></div></div>
-        <fieldset>
-          <legend>Or artist membership</legend>
-          <div class="tier-pick">
-            <label class="tier-opt"><input type="radio" name="tier" id="tier-daytripper" value="daytripper" data-name="Day Tripper" data-amount="45"><span class="sw pat-dots" style="background-size:20px 20px;background-image:radial-gradient(circle,var(--ink) 0 4px,transparent 5px)"></span><b>Day Tripper</b><small>$45 a month</small></label>
-            <label class="tier-opt"><input type="radio" name="tier" id="tier-nightowl" value="nightowl" data-name="Night Owl" data-amount="95"><span class="sw pat-check" style="background-size:20px 20px"></span><b>Night Owl</b><small>$95 a month</small></label>
-            <label class="tier-opt"><input type="radio" name="tier" id="tier-partner" value="partner" data-name="Partner Org" data-amount="150"><span class="sw pat-wave" style="background-size:30px 15px"></span><b>Partner Org</b><small>$150 a month</small></label>
-          </div>
-        </fieldset>
+        </div>
         <div class="fields">
           <div class="fld"><label for="join-first">First name</label><input type="text" id="join-first" name="first" autocomplete="given-name" required maxlength="80"></div>
           <div class="fld"><label for="join-last">Last name</label><input type="text" id="join-last" name="last" autocomplete="family-name" required maxlength="80"></div>
           <div class="fld"><label for="join-email">Email</label><input type="email" id="join-email" name="email" autocomplete="email" required maxlength="254"></div>
           <div class="fld"><label for="join-phone">Phone <i>(optional)</i></label><input type="tel" id="join-phone" name="phone" autocomplete="tel" maxlength="40"></div>
           <div class="fld full" id="join-org-field" hidden><label for="join-org">Organization or group</label><input type="text" id="join-org" name="org" autocomplete="organization" maxlength="120"></div>
-          <div class="fld full"><label for="join-wall">Name for the founders wall <i>(optional, leave blank to stay off it)</i></label><input type="text" id="join-wall" name="wall" maxlength="80" placeholder="How you want to be listed"></div>
+          <div class="fld full" id="join-wall-field"><label for="join-wall">Name for the founders wall <i>(optional, leave blank to stay off it)</i></label><input type="text" id="join-wall" name="wall" maxlength="80" placeholder="How you want to be listed"></div>
           <div class="fld full"><label for="join-skills">Skills you could share <i>(optional)</i></label><input type="text" id="join-skills" name="skills" maxlength="300" placeholder="Sewing, sound, carpentry, cooking, grant writing…"></div>
           <div class="fld full"><label for="join-notes">Anything you want us to know? <i>(optional)</i></label><textarea id="join-notes" name="notes" maxlength="2000" placeholder="What you hope to make here, how your group would use the space, or if you want your gift to go through SOMArts"></textarea></div>
           <div class="hp" aria-hidden="true"><label for="join-hp">Leave this empty</label><input type="text" id="join-hp" name="website" tabindex="-1" autocomplete="off"></div>
@@ -1195,8 +1209,25 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
     quick.hidden = r.value !== 'supporter';
     document.getElementById('join-submit').textContent = r.value === 'supporter' ? 'Become a founding supporter' : 'Join as a ' + r.dataset.name;
     orgField.hidden = r.value !== 'partner';
+    var sup = r.value === 'supporter';
+    document.getElementById('join-wall-field').hidden = !sup;
+    if (!sup) lastArtist = r.value;
+    document.querySelectorAll('.join-tabs [role="tab"]').forEach(function(t){
+      var on = (t.dataset.tab === 'supporter') === sup;
+      t.setAttribute('aria-selected', on ? 'true' : 'false'); t.tabIndex = on ? 0 : -1;
+      document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+    });
     paintQuick();
   }
+  var lastArtist = 'daytripper';
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.join-tabs [role="tab"]'));
+  function openTab(t){ pickTier(t.dataset.tab === 'supporter' ? 'supporter' : lastArtist); t.focus(); }
+  tabs.forEach(function(t, i){
+    t.addEventListener('click', function(){ openTab(t); });
+    t.addEventListener('keydown', function(e){
+      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); openTab(tabs[(i + 1) % tabs.length]); }
+    });
+  });
   quick.addEventListener('click', function(e){ var b = e.target.closest('button'); if (!b) return; amount.value = b.dataset.v; paintQuick(); });
   amount.addEventListener('input', paintQuick);
   function pickTier(value, scroll){
@@ -1229,7 +1260,7 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
       fetch('/api/join', {
         method: 'POST', headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({ tier: r.value, amount: monthly, first: f.first.value.trim(), last: f.last.value.trim(), email: f.email.value.trim(),
-          phone: f.phone.value.trim(), org: f.org.value.trim(), wall: f.wall.value.trim(), skills: f.skills.value.trim(), notes: f.notes.value.trim(), website: f.website.value })
+          phone: f.phone.value.trim(), org: r.value === 'partner' ? f.org.value.trim() : '', wall: r.value === 'supporter' ? f.wall.value.trim() : '', skills: f.skills.value.trim(), notes: f.notes.value.trim(), website: f.website.value })
       }).then(function(res){ return res.json().then(function(j){ return {ok: res.ok, body: j}; }); })
         .then(function(res){
           if (!res.ok || !res.body.ok) throw new Error(res.body && res.body.error || 'failed');
