@@ -5,6 +5,7 @@ Website for Sucka Free Collective, an SF born & raised artist collective and war
 | Path | What it is |
 | --- | --- |
 | `public/` | The site: `index.html` and the `img/` folder. Pages are views inside `index.html`, switched by the URL hash, e.g. `suckafree.org/#events`. |
+| `public/brand/` | Unlisted page at `suckafree.org/brand`: brand archetypes and voice. Not in the nav, and tells search engines not to index it. Its styles are copied from `index.html`. |
 | `src/worker.js` | The small backend: email sign-ups (`POST /api/signup`), founding member sign-ups (`POST /api/join`), the founding count (`GET /api/founding`) and the password-protected admin (`/admin`). |
 | `google-sheet/Code.gs` | Apps Script that copies each new sign-up into the collective's Google Sheet. |
 | `wrangler.jsonc` | Cloudflare settings. |
