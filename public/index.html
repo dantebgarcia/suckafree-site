@@ -1427,8 +1427,10 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
   signup('cowork-form', 'cw-status');
 
   // ---------- the pill ----------
-  var pill = document.getElementById('pill'), gone = false;
-  try { gone = localStorage.getItem('sfc-pill') === 'closed'; } catch(err){}
+  // Turned off for now. Set PILL_ON to true to bring the floating sign-up banner back.
+  var PILL_ON = false;
+  var pill = document.getElementById('pill'), gone = !PILL_ON;
+  try { if (localStorage.getItem('sfc-pill') === 'closed') gone = true; } catch(err){}
   function maybePill(){ if (!gone && window.scrollY > window.innerHeight * .6) { pill.hidden = false; window.removeEventListener('scroll', maybePill); } }
   window.addEventListener('scroll', maybePill, {passive: true});
   function closePill(){ gone = true; pill.hidden = true; try { localStorage.setItem('sfc-pill', 'closed'); } catch(err){} }
