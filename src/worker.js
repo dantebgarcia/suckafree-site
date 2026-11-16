@@ -4,7 +4,9 @@
 // handles two kinds of requests:
 //
 //   POST /api/signup         email list sign-ups from the site's forms
-//   /admin ...               password-protected list of sign-ups
+//   POST /api/join           founding member sign-ups from the Membership page
+//   GET  /api/founding       how many founding members so far (for the progress bar)
+//   /admin ...               password-protected lists of members and sign-ups
 //
 // Sign-ups are stored in a Cloudflare D1 database (binding DB) and, when the
 // SHEET_WEBHOOK_URL and SHEET_SECRET secrets are set, copied to the
@@ -14,6 +16,9 @@
 //   ADMIN_PASSWORD     password for /admin (any username works)
 //   SHEET_WEBHOOK_URL  the Apps Script web app URL
 //   SHEET_SECRET       shared secret, same value as SECRET in Code.gs
+// Optional variables:
+//   FOUNDING_GOAL      defaults to 50
+//   FOUNDING_OFFSET    founding members who joined offline, added to the count
 
 const SCHEMA = `CREATE TABLE IF NOT EXISTS signups (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -27,6 +32,26 @@ const SCHEMA = `CREATE TABLE IF NOT EXISTS signups (
   sheet_status TEXT
 )`;
 
+const MEMBERS_SCHEMA = `CREATE TABLE IF NOT EXISTS members (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  email TEXT NOT NULL UNIQUE COLLATE NOCASE,
+  first TEXT, last TEXT, phone TEXT, org TEXT,
+  tier TEXT NOT NULL, amount INTEGER NOT NULL,
+  wall TEXT, skills TEXT, notes TEXT,
+  status TEXT NOT NULL DEFAULT 'signed up',
+  created_at TEXT NOT NULL,
+  sheet_status TEXT
+)`;
+
+const TIERS = {
+  rider: { name: 'Rider', amount: 15 },
+  daytripper: { name: 'Day Tripper', amount: 45 },
+  nightowl: { name: 'Night Owl', amount: 95 },
+  partner: { name: 'Partner Org', amount: 150 },
+  pwyc: { name: 'Rider (pay what you can)', amount: null },
+};
+const STATUSES = ['signed up', 'paying', 'cancelled'];
+
 const EMAIL_RE = /^[^\s@<>()[\]\\,;:"]+@[^\s@<>()[\]\\,;:"]+\.[^\s@<>()[\]\\,;:"]{2,}$/;
 const TZ = 'America/Los_Angeles';
 
@@ -38,6 +63,7 @@ function ensureSchema(env) {
   if (!schemaReady) {
     schemaReady = (async () => {
       await env.DB.prepare(SCHEMA).run();
+      await env.DB.prepare(MEMBERS_SCHEMA).run();
       const { results } = await env.DB.prepare('PRAGMA table_info(signups)').all();
       const have = new Set(results.map((c) => c.name));
       for (const col of LATER_COLUMNS) {
@@ -60,6 +86,14 @@ export default {
       if (path === '/api/signup') {
         if (request.method !== 'POST') return json({ ok: false, error: 'use POST' }, 405, { Allow: 'POST' });
         return await handleSignup(request, env, ctx);
+      }
+      if (path === '/api/join') {
+        if (request.method !== 'POST') return json({ ok: false, error: 'use POST' }, 405, { Allow: 'POST' });
+        return await handleJoin(request, env, ctx);
+      }
+      if (path === '/api/founding') {
+        await ensureSchema(env);
+        return json({ ok: true, count: await foundingCount(env), goal: foundingGoal(env) }, 200, { 'Cache-Control': 'public, max-age=30' });
       }
       if (path === '/admin' || path.startsWith('/admin/')) {
         return await handleAdmin(request, env, ctx, url, path);
@@ -117,26 +151,99 @@ async function handleSignup(request, env, ctx) {
   return json({ ok: true, already: !isNew });
 }
 
-async function sendToSheet(env, row) {
-  let status;
-  if (!env.SHEET_WEBHOOK_URL || !env.SHEET_SECRET) {
-    status = 'not set up';
-  } else {
-    try {
-      const res = await fetch(env.SHEET_WEBHOOK_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ secret: env.SHEET_SECRET, ...row, status: row.member ? 'Interested' : 'Lead' }),
-        redirect: 'follow',
-      });
-      const text = await res.text();
-      let reply = null;
-      try { reply = JSON.parse(text); } catch { /* Apps Script error pages are HTML */ }
-      status = res.ok && reply && reply.ok ? 'sent' : 'error: ' + (reply && reply.error || 'HTTP ' + res.status);
-    } catch (err) {
-      status = 'error: ' + String(err && err.message || err).slice(0, 120);
-    }
+// --------------------------------------------------------- founding members
+
+function foundingGoal(env) { return Number(env.FOUNDING_GOAL) > 0 ? Number(env.FOUNDING_GOAL) : 50; }
+
+async function foundingCount(env) {
+  const r = await env.DB.prepare("SELECT COUNT(*) AS n FROM members WHERE status != 'cancelled'").first();
+  return r.n + (Number(env.FOUNDING_OFFSET) > 0 ? Math.floor(Number(env.FOUNDING_OFFSET)) : 0);
+}
+
+async function handleJoin(request, env, ctx) {
+  if (!sameOrigin(request)) return json({ ok: false, error: 'bad origin' }, 403);
+  let data;
+  try { data = await request.json(); } catch { return json({ ok: false, error: 'bad request' }, 400); }
+  if (clean(data.website, 200)) return json({ ok: true });
+
+  const email = clean(data.email, 254).toLowerCase();
+  if (!EMAIL_RE.test(email)) return json({ ok: false, error: 'invalid email' }, 400);
+  const tierKey = clean(data.tier, 20);
+  const tier = TIERS[tierKey];
+  if (!tier) return json({ ok: false, error: 'invalid level' }, 400);
+  let amount = tier.amount;
+  if (amount == null) {
+    amount = Math.round(Number(data.amount));
+    if (!(amount >= 5 && amount <= 1000)) return json({ ok: false, error: 'invalid amount' }, 400);
   }
+  const first = clean(data.first, 80), last = clean(data.last, 80);
+  if (!first || !last) return json({ ok: false, error: 'missing name' }, 400);
+
+  const row = {
+    email, first, last,
+    phone: clean(data.phone, 40), org: clean(data.org, 120),
+    tier: tierKey, tier_name: tier.name, amount,
+    wall: clean(data.wall, 80), skills: clean(data.skills, 300), notes: clean(data.notes, 2000),
+    created_at: new Date().toISOString(),
+  };
+
+  await ensureSchema(env);
+  const existing = await env.DB.prepare('SELECT id FROM members WHERE email = ?1').bind(email).first();
+  if (existing) {
+    // Same person signing up again: keep their original date, update their choices.
+    await env.DB.prepare(
+      `UPDATE members SET first=?2, last=?3, phone=?4, org=?5, tier=?6, amount=?7, wall=?8, skills=?9, notes=?10,
+         status = CASE WHEN status = 'cancelled' THEN 'signed up' ELSE status END, sheet_status='pending'
+       WHERE email = ?1`
+    ).bind(email, row.first, row.last, row.phone, row.org, row.tier, row.amount, row.wall, row.skills, row.notes).run();
+  } else {
+    await env.DB.prepare(
+      `INSERT INTO members (email, first, last, phone, org, tier, amount, wall, skills, notes, created_at, sheet_status)
+       VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, 'pending')`
+    ).bind(email, row.first, row.last, row.phone, row.org, row.tier, row.amount, row.wall, row.skills, row.notes, row.created_at).run();
+  }
+
+  // Founding members also go on the email list.
+  const listRow = { email, name: first, skills: row.skills, member: 'yes', source: 'membership', page: 'membership', created_at: row.created_at };
+  const listed = await env.DB.prepare(
+    `INSERT INTO signups (email, name, skills, member, source, page, created_at, sheet_status)
+     VALUES (?1, ?2, ?3, 'yes', 'membership', 'membership', ?4, 'pending') ON CONFLICT(email) DO NOTHING`
+  ).bind(email, first, row.skills, row.created_at).run();
+
+  ctx.waitUntil((async () => {
+    await sendMemberToSheet(env, { ...row, status: 'signed up', updated: Boolean(existing) });
+    if (listed.meta && listed.meta.changes > 0) await sendToSheet(env, listRow);
+  })());
+
+  return json({ ok: true, updated: Boolean(existing), count: await foundingCount(env), goal: foundingGoal(env) });
+}
+
+async function postToSheet(env, payload) {
+  if (!env.SHEET_WEBHOOK_URL || !env.SHEET_SECRET) return 'not set up';
+  try {
+    const res = await fetch(env.SHEET_WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ secret: env.SHEET_SECRET, ...payload }),
+      redirect: 'follow',
+    });
+    const text = await res.text();
+    let reply = null;
+    try { reply = JSON.parse(text); } catch { /* Apps Script error pages are HTML */ }
+    return res.ok && reply && reply.ok ? 'sent' : 'error: ' + (reply && reply.error || 'HTTP ' + res.status);
+  } catch (err) {
+    return 'error: ' + String(err && err.message || err).slice(0, 120);
+  }
+}
+
+async function sendMemberToSheet(env, row) {
+  const status = await postToSheet(env, { kind: 'member', ...row });
+  await env.DB.prepare('UPDATE members SET sheet_status = ?1 WHERE email = ?2').bind(status, row.email).run();
+  return status;
+}
+
+async function sendToSheet(env, row) {
+  const status = await postToSheet(env, { ...row, status: row.member ? 'Interested' : 'Lead' });
   await env.DB.prepare('UPDATE signups SET sheet_status = ?1 WHERE email = ?2').bind(status, row.email).run();
   return status;
 }
@@ -164,15 +271,42 @@ async function handleAdmin(request, env, ctx, url, path) {
       if (Number.isInteger(id)) await env.DB.prepare('DELETE FROM signups WHERE id = ?1').bind(id).run();
       return redirect('/admin?msg=deleted');
     }
+    if (path === '/admin/member-status') {
+      const id = Number(form.get('id')), st = String(form.get('status') || '');
+      if (Number.isInteger(id) && STATUSES.includes(st)) await env.DB.prepare('UPDATE members SET status = ?1 WHERE id = ?2').bind(st, id).run();
+      return redirect('/admin?msg=updated#members');
+    }
+    if (path === '/admin/member-delete') {
+      const id = Number(form.get('id'));
+      if (Number.isInteger(id)) await env.DB.prepare('DELETE FROM members WHERE id = ?1').bind(id).run();
+      return redirect('/admin?msg=deleted#members');
+    }
     if (path === '/admin/resend') {
       const { results } = await env.DB.prepare(
         "SELECT email, name, skills, member, source, page, created_at FROM signups WHERE sheet_status IS NULL OR sheet_status != 'sent' ORDER BY id LIMIT 40"
       ).all();
       let sent = 0;
       for (const row of results) if ((await sendToSheet(env, row)) === 'sent') sent++;
+      const mem = await env.DB.prepare(
+        "SELECT * FROM members WHERE sheet_status IS NULL OR sheet_status != 'sent' ORDER BY id LIMIT 40"
+      ).all();
+      for (const m of mem.results) {
+        if ((await sendMemberToSheet(env, { ...m, tier_name: (TIERS[m.tier] || {}).name || m.tier })) === 'sent') sent++;
+      }
+      results.push(...mem.results);
       return redirect('/admin?msg=resent-' + sent + '-of-' + results.length);
     }
     return new Response('Not found', { status: 404 });
+  }
+
+  if (path === '/admin/members.csv') {
+    const { results } = await env.DB.prepare('SELECT * FROM members ORDER BY id').all();
+    const header = ['signed_up', 'first', 'last', 'email', 'phone', 'level', 'monthly', 'status', 'founders_wall', 'organization', 'skills', 'notes'];
+    const lines = [header.join(',')].concat(results.map((r) =>
+      [r.created_at, r.first, r.last, r.email, r.phone, (TIERS[r.tier] || {}).name || r.tier, r.amount, r.status, r.wall, r.org, r.skills, r.notes].map(csvCell).join(',')));
+    return new Response(lines.join('\r\n') + '\r\n', {
+      headers: { 'Content-Type': 'text/csv; charset=utf-8', 'Content-Disposition': 'attachment; filename="suckafree-founding-members.csv"', 'Cache-Control': 'no-store' },
+    });
   }
 
   if (path === '/admin/signups.csv') {
@@ -196,8 +330,15 @@ async function handleAdmin(request, env, ctx, url, path) {
   const members = (await env.DB.prepare("SELECT COUNT(*) AS n FROM signups WHERE member = 'yes'").first()).n;
   const waiting = results.filter((r) => r.sheet_status !== 'sent').length;
   const sheetReady = Boolean(env.SHEET_WEBHOOK_URL && env.SHEET_SECRET);
+  const mem = (await env.DB.prepare('SELECT * FROM members ORDER BY id DESC').all()).results;
+  const live = mem.filter((m) => m.status !== 'cancelled');
+  const pledged = live.reduce((t, m) => t + (m.amount || 0), 0);
+  const paying = live.filter((m) => m.status === 'paying');
+  const payingSum = paying.reduce((t, m) => t + (m.amount || 0), 0);
+  const fCount = await foundingCount(env), fGoal = foundingGoal(env);
+  const memWaiting = mem.filter((m) => m.sheet_status !== 'sent').length;
   const msg = url.searchParams.get('msg') || '';
-  const note = msg === 'deleted' ? 'Removed.'
+  const note = msg === 'updated' ? 'Updated.' : msg === 'deleted' ? 'Removed.'
     : msg.startsWith('resent-') ? 'Sent ' + msg.split('-')[1] + ' of ' + msg.split('-')[3] + ' to the sheet.' : '';
 
   const rows = results.map((r) => `<tr>
@@ -211,12 +352,37 @@ async function handleAdmin(request, env, ctx, url, path) {
       <td><form method="post" action="/admin/delete" onsubmit="return confirm('Remove ${esc(r.email)}?')"><input type="hidden" name="id" value="${r.id}"><button class="x" type="submit">Remove</button></form></td>
     </tr>`).join('');
 
-  return page('Email sign-ups', `
+  const memRows = mem.map((m) => `<tr class="${m.status === 'cancelled' ? 'off' : ''}">
+      <td>${esc(fmtDate(m.created_at))}</td>
+      <td>${esc(m.first + ' ' + m.last)}${m.org ? '<br><small>' + esc(m.org) + '</small>' : ''}</td>
+      <td><a href="mailto:${esc(m.email)}">${esc(m.email)}</a>${m.phone ? '<br><small>' + esc(m.phone) + '</small>' : ''}</td>
+      <td>${esc((TIERS[m.tier] || {}).name || m.tier)}</td>
+      <td class="num">$${m.amount}</td>
+      <td><form method="post" action="/admin/member-status"><input type="hidden" name="id" value="${m.id}">
+        <select name="status" onchange="this.form.submit()">${STATUSES.map((st) => `<option${st === m.status ? ' selected' : ''}>${st}</option>`).join('')}</select>
+        <noscript><button class="x">Save</button></noscript></form></td>
+      <td>${esc(m.wall || '')}</td>
+      <td>${esc(m.skills || '')}${m.notes ? '<br><small>' + esc(m.notes) + '</small>' : ''}</td>
+      <td class="${m.sheet_status === 'sent' ? 'ok' : 'warn'}">${esc(m.sheet_status || 'pending')}</td>
+      <td><form method="post" action="/admin/member-delete" onsubmit="return confirm('Remove ${esc(m.email)} completely?')"><input type="hidden" name="id" value="${m.id}"><button class="x" type="submit">Remove</button></form></td>
+    </tr>`).join('');
+
+  return page('Members and sign-ups', `
+    <h2 id="members">Founding members</h2>
+    <div class="bar">
+      <p class="big">${fCount} of ${fGoal} · $${pledged.toLocaleString('en-US')}/month signed up · ${paying.length} paying ($${payingSum.toLocaleString('en-US')}/month)</p>
+      <div class="actions"><a class="btn" href="/admin/members.csv">Download members CSV</a></div>
+    </div>
+    <p class="hint">Set someone to <b>paying</b> once their monthly payment is set up. <b>Cancelled</b> takes them off the count on the site.</p>
+    ${mem.length ? `<div class="scroll"><table>
+      <thead><tr><th>Joined</th><th>Name</th><th>Contact</th><th>Level</th><th>Monthly</th><th>Status</th><th>Founders wall</th><th>Skills / notes</th><th>Sheet</th><th></th></tr></thead>
+      <tbody>${memRows}</tbody></table></div>` : '<p>No founding members yet.</p>'}
+    <h2 id="list">Email list</h2>
     <div class="bar">
       <p class="big">${total} ${total === 1 ? 'person' : 'people'} on the list · ${members} interested in membership</p>
       <div class="actions">
-        <a class="btn" href="/admin/signups.csv">Download CSV</a>
-        ${sheetReady && waiting ? `<form method="post" action="/admin/resend"><button class="btn" type="submit">Send ${waiting} missing to the sheet</button></form>` : ''}
+        <a class="btn" href="/admin/signups.csv">Download email list CSV</a>
+        ${sheetReady && (waiting + memWaiting) ? `<form method="post" action="/admin/resend"><button class="btn" type="submit">Send ${waiting + memWaiting} missing to the sheet</button></form>` : ''}
       </div>
     </div>
     ${note ? `<p class="note">${esc(note)}</p>` : ''}
@@ -307,6 +473,12 @@ th{font-stretch:72%;text-transform:uppercase;font-size:.9rem}
 td.ok{color:var(--green);font-weight:700}
 td.warn{color:var(--tomato);font-weight:700}
 td form{margin:0}
+h2{margin:18px 0 0;font-stretch:66%;font-weight:800;text-transform:uppercase;font-size:clamp(1.8rem,4vw,2.6rem);line-height:.95}
+.hint{margin:0;font-size:.95rem}
+td.num{font-variant-numeric:tabular-nums;font-weight:700}
+tr.off td{opacity:.45}
+small{font-size:.85rem;opacity:.8}
+select{font:inherit;font-size:.9rem;padding:4px 6px;border:1px solid var(--ink);background:#fff}
 .x{font:inherit;font-size:.85rem;background:none;border:1px solid var(--ink);padding:4px 8px;cursor:pointer}
 a{color:inherit}
 </style></head>

@@ -5,7 +5,7 @@ Website for Sucka Free Collective, an SF born & raised artist collective and war
 | Path | What it is |
 | --- | --- |
 | `public/` | The site: `index.html` and the `img/` folder. Pages are views inside `index.html`, switched by the URL hash, e.g. `suckafree.org/#events`. |
-| `src/worker.js` | The small backend: email sign-ups (`POST /api/signup`) and the password-protected sign-up list (`/admin`). |
+| `src/worker.js` | The small backend: email sign-ups (`POST /api/signup`), founding member sign-ups (`POST /api/join`), the founding count (`GET /api/founding`) and the password-protected admin (`/admin`). |
 | `google-sheet/Code.gs` | Apps Script that copies each new sign-up into the collective's Google Sheet. |
 | `wrangler.jsonc` | Cloudflare settings. |
 
@@ -37,6 +37,15 @@ Set in Cloudflare: Workers & Pages > suckafree-site > Settings > Variables and S
 
 Sign-ups made before the sheet was connected can be sent with **Send missing to the sheet** on `/admin`.
 
+## Founding members drive
+
+The Membership page runs a drive for 50 monthly founding members by April 15, 2027.
+
+- Sign-ups are saved in the `members` table, added to the email list, and copied to a **Founding Members** tab in the sheet.
+- The progress bar counts everyone not marked cancelled, plus the optional `FOUNDING_OFFSET` variable for people who joined offline. `FOUNDING_GOAL` changes the goal (default 50).
+- On `/admin`, set each member's status to **paying** once their payment is set up, or **cancelled** to take them off the count.
+- Payment links: paste each level's link into `PAY_LINKS` near the bottom of `public/index.html`. With a link set, members get a "Set up my payment" button right after signing up; without one, the page says you will email them a link.
+
 ## Not connected yet
 
-The membership, rental and contact forms still show a preview message instead of sending.
+The rental and contact forms still show a preview message instead of sending. Membership dues need payment links (see above).
