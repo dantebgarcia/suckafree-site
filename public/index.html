@@ -259,6 +259,16 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
 .status{background:var(--ink);color:var(--cream);padding:14px 18px;display:grid;gap:4px}
 .status b{font-family:var(--narrow);font-stretch:70%;font-weight:800;text-transform:uppercase;font-size:1.3rem}
 
+/* instagram embeds */
+.igs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,326px),1fr));gap:clamp(16px,2.4vw,28px);align-items:start}
+.ig{margin:0;display:grid;gap:10px;min-width:0}
+.ig figcaption{font-family:var(--narrow);font-stretch:66%;font-weight:800;text-transform:uppercase;font-size:clamp(1.8rem,3vw,2.4rem);line-height:.95}
+.ig blockquote.instagram-media{margin:0 !important;min-width:0 !important;width:100% !important;max-width:540px !important;background:var(--cream);border:2px solid var(--ink) !important;border-radius:0 !important;box-shadow:none !important}
+.ig blockquote.instagram-media > a{display:grid;gap:10px;place-content:center;justify-items:center;text-align:center;min-height:320px;padding:24px;text-decoration:none;background:repeating-linear-gradient(135deg,transparent 0 18px,rgba(11,11,11,.06) 18px 20px)}
+.ig blockquote.instagram-media > a b{font-family:var(--narrow);font-stretch:66%;font-weight:800;text-transform:uppercase;font-size:1.8rem;line-height:.95}
+.ig blockquote.instagram-media > a span{font-family:var(--narrow);font-stretch:72%;font-weight:700;text-transform:uppercase;font-size:1.05rem;border:2px solid var(--ink);padding:8px 12px 7px}
+.ig iframe{max-width:100% !important;min-width:0 !important}
+
 /* founding drive */
 .drive{background:var(--ink);color:var(--cream);padding:clamp(22px,3vw,32px);display:grid;gap:14px}
 .drive-num{margin:0;font-family:var(--narrow);font-stretch:66%;font-weight:800;text-transform:uppercase;line-height:.9;font-size:clamp(1.6rem,2.6vw,2.2rem)}
@@ -444,6 +454,16 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
           <span>Our non-partisan election party, with live music, the ballot props and a clothing swap.</span>
           <span class="btn btn--sm" style="justify-self:start">Watch the clip</span>
         </a>
+      </div>
+    </div>
+  </section>
+  <section class="field f-pink">
+    <div class="wrap stack">
+      <div class="head"><h2>From our Instagram</h2><a class="btn btn--sm" href="https://www.instagram.com/suckafreecollective415/" target="_blank" rel="noopener">Follow @suckafreecollective415</a></div>
+      <div class="igs">
+        <figure class="ig"><blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/DZNx8fIgX_0/?utm_source=ig_embed" data-instgrm-version="14"><a href="https://www.instagram.com/p/DZNx8fIgX_0/" target="_blank" rel="noopener"><b>Sucka Free on Instagram</b><span>See it on Instagram &rarr;</span></a></blockquote></figure>
+        <figure class="ig"><blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/DT01miuFHQl/?utm_source=ig_embed" data-instgrm-version="14"><a href="https://www.instagram.com/p/DT01miuFHQl/" target="_blank" rel="noopener"><b>Sucka Free on Instagram</b><span>See it on Instagram &rarr;</span></a></blockquote></figure>
+        <figure class="ig"><blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/DfshzTSD2Qq/?utm_source=ig_embed" data-instgrm-version="14"><a href="https://www.instagram.com/p/DfshzTSD2Qq/" target="_blank" rel="noopener"><b>Sucka Free on Instagram</b><span>See it on Instagram &rarr;</span></a></blockquote></figure>
       </div>
     </div>
   </section>
@@ -654,6 +674,15 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
         <div class="block b-sky"><h3>Unity Fest</h3><p>An all-ages rock show and chill space, part of our fall season.</p></div>
       </div>
       <div class="btn-row"><a class="btn btn--solid" href="https://www.instagram.com/suckafreecollective415/" target="_blank" rel="noopener">Follow @suckafreecollective415</a><a class="btn" href="#rent">Host your own event</a></div>
+    </div>
+  </section>
+  <section class="field f-cream">
+    <div class="wrap stack">
+      <div class="head"><h2>See it for yourself</h2><span class="cap" style="font-size:1.3rem">From our Instagram</span></div>
+      <div class="igs">
+        <div class="ig-col"><figure class="ig"><figcaption>Clothing swap</figcaption><blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/Da058evSr1K/?utm_source=ig_embed" data-instgrm-version="14"><a href="https://www.instagram.com/reel/Da058evSr1K/" target="_blank" rel="noopener"><b>Clothing swap</b><span>Watch on Instagram &rarr;</span></a></blockquote></figure></div>
+        <div class="ig-col"><figure class="ig"><figcaption>Pop Out to the Polls</figcaption><blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/DeQWatuI1Iq/?utm_source=ig_embed" data-instgrm-version="14"><a href="https://www.instagram.com/reel/DeQWatuI1Iq/" target="_blank" rel="noopener"><b>Pop Out to the Polls</b><span>Watch on Instagram &rarr;</span></a></blockquote></figure></div>
+      </div>
     </div>
   </section>
   <section class="field f-cream">
@@ -910,6 +939,7 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
       if (a.getAttribute('href') === '#' + name) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
     });
     window.scrollTo(0, 0);
+    loadIG(name);
   }
   window.addEventListener('hashchange', function(){ show((location.hash || '').slice(1) || 'home'); });
   document.addEventListener('click', function(e){
@@ -924,6 +954,20 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:32px}
     var topic = a.getAttribute('data-topic'); if (topic) { var sel = document.getElementById('contact-topic'); if (sel) sel.value = topic; }
     var rentType = a.getAttribute('data-rent'); if (rentType) { var rt = document.getElementById('rent-type'); if (rt) rt.value = rentType; }
   });
+
+  // ---------- instagram embeds ----------
+  var igLoading = false;
+  function loadIG(name){
+    var v = document.querySelector('main > [data-view="' + name + '"]');
+    if (!v || !v.querySelector('.instagram-media')) return;
+    if (window.instgrm && window.instgrm.Embeds) { window.instgrm.Embeds.process(); return; }
+    if (igLoading) return;
+    igLoading = true;
+    var sc = document.createElement('script');
+    sc.async = true; sc.src = 'https://www.instagram.com/embed.js';
+    sc.onload = function(){ if (window.instgrm && window.instgrm.Embeds) window.instgrm.Embeds.process(); };
+    document.body.appendChild(sc);
+  }
 
   // ---------- menu ----------
   var menu = document.getElementById('menu'), openBtn = document.getElementById('menu-open');
